@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import ggc.app.exception.DuplicatePartnerKeyException;
+import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.ImportFileException;
 import ggc.core.exception.MissingFileAssociationException;
@@ -31,7 +32,9 @@ public class WarehouseManager {
     _warehouse.addPartner(newPartner);
   }
 
-  
+  public Partner getPartner(String id) throws UnknownPartnerKeyException{
+    return _warehouse.getPartner(id);
+  }
 
   //FIXME define other attributes
   //FIXME define constructor(s)

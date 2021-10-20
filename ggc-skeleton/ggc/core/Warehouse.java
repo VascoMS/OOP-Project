@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.io.IOException;
 
 import ggc.app.exception.DuplicatePartnerKeyException;
+import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.core.exception.BadEntryException;
 
 /**
@@ -39,6 +40,12 @@ public class Warehouse implements Serializable {
     _partners.put(partner.getId(), partner);
   }
 
+  public Partner getPartner(String id) throws UnknownPartnerKeyException{
+    if(_partners.containsKey(id))
+      return _partners.get(id);
+    throw new UnknownPartnerKeyException(id);
+      
+  }
   // FIXME define attributes
   // FIXME define contructor(s)
   // FIXME define methods

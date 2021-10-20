@@ -6,7 +6,7 @@ public class Partner {
     private String _name;
     private String _address;
     private String _id;
-    private String _status;
+    private Status _status;
     private double _points;
     private ArrayList<Batch> _batches;
     private ArrayList<Acquisition> _acquisitions;
@@ -18,7 +18,7 @@ public class Partner {
         _address = address;
         _id = id;
         _points = 0;
-        _status = "NORMAL";
+        _status = Status.NORMAL;
     }
 
     public String getName(){
@@ -33,7 +33,7 @@ public class Partner {
         return _id;
     }
 
-    public String getStatus(){
+    public Status getStatus(){
         return _status;
     }
 
@@ -57,6 +57,12 @@ public class Partner {
         return _notifications;
     }
 
+  /*  public int getAcquisitionValue(){
+        for(Acquisition acquisition:_acquisitions){
+
+        }
+    }
+*/
     @Override
     public int hashCode(){
         return Objects.hash(_id);
