@@ -28,7 +28,7 @@ public Product getProduct(){
 
 @Override
 public String toString(){
-    return ""; //FIXME
+    return ""+_product.getId()+"|"+_partner.getId()+"|"+_price+"|"+_quantity;
 }
 
 Batch makeCopy(){
