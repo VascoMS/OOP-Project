@@ -20,5 +20,4 @@ public class Date {
         return Math.abs(other.getDays()-_days);
     }
 
-    public static Date now(){return Date(_days);}
 }
