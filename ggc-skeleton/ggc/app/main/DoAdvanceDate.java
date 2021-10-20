@@ -1,9 +1,9 @@
 package ggc.app.main;
 
+//FIXME import classes
+import ggc.core.WarehouseManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.core.WarehouseManager;
-//FIXME import classes
 
 /**
  * Advance current date.
@@ -12,12 +12,13 @@ class DoAdvanceDate extends Command<WarehouseManager> {
 
   DoAdvanceDate(WarehouseManager receiver) {
     super(Label.ADVANCE_DATE, receiver);
-    //FIXME add command fields
+    addIntegerField("numberOfDays", Message.requestDaysToAdvance());//FIXME add command fields
   }
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    Integer i = integerField("numberOfDays");//FIXME implement command
+    _receiver.incrementDate(i);
   }
 
 }

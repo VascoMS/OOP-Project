@@ -1,15 +1,13 @@
 package ggc.core;
 
-//FIXME import classes (cannot import from pt.tecnico or ggc.app)
-
-import java.io.Serializable;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import ggc.app.exception.DuplicatePartnerKeyException;
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.ImportFileException;
-import ggc.core.exception.UnavailableFileException;
 import ggc.core.exception.MissingFileAssociationException;
+import ggc.core.exception.UnavailableFileException;
 
 /** Façade for access. */
 public class WarehouseManager {
@@ -17,8 +15,23 @@ public class WarehouseManager {
   /** Name of file storing current warehouse. */
   private String _filename = "";
 
-  /** The wharehouse itself. */
+  /** The warehouse itself. */
   private Warehouse _warehouse = new Warehouse();
+
+  public Date getDateWarehouse(){
+    return _warehouse.getDate();
+  }
+
+  public void incrementDate(int days){
+    _warehouse.newDate(days);
+  }
+
+  public void addPartner(String name, String address, String id) throws DuplicatePartnerKeyException{
+    Partner newPartner = new Partner(name, address, id);
+    _warehouse.addPartner(newPartner);
+  }
+
+  
 
   //FIXME define other attributes
   //FIXME define constructor(s)
