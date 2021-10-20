@@ -20,5 +20,8 @@ public class Date {
         return Math.abs(other.getDays()-_days);
     }
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> b59049519b33116d6c061b7c830dab86082d917b
 }
