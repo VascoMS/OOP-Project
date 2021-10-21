@@ -2,6 +2,8 @@ package ggc.core;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import ggc.app.exception.DuplicatePartnerKeyException;
 import ggc.app.exception.UnknownPartnerKeyException;
@@ -23,6 +25,10 @@ public class WarehouseManager {
     return _warehouse.getDate();
   }
 
+  public HashMap<String,Product> getAllProductsWarehouse(){
+    return _warehouse.getProducts();
+  }
+
   public void incrementDate(int days){
     _warehouse.newDate(days);
   }
@@ -34,6 +40,10 @@ public class WarehouseManager {
 
   public Partner getPartner(String id) throws UnknownPartnerKeyException{
     return _warehouse.getPartner(id);
+  }
+
+  public ArrayList<Partner> getSortedPartners(){
+    return _warehouse.getSortedPartners();
   }
 
   //FIXME define other attributes

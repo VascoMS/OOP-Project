@@ -6,6 +6,7 @@ public abstract class Product{
     private double _maxPrice;
     private String _id;
     private ArrayList<Batch> _batches;
+    private long _totalStock;
 
     Product(String id){
         _id=id;
@@ -13,6 +14,14 @@ public abstract class Product{
     
     public double getMaxPrice(){
         return _maxPrice;
+    }
+
+    public void updateMaxPrice(double maxPrice){
+        _maxPrice=maxPrice;
+    }
+
+    public void addBatch(Batch batch) {
+        _batches.add(batch);
     }
 
     public String getId(){
@@ -23,12 +32,17 @@ public abstract class Product{
         return _batches;
     }
 
-    @Override
-    public String toString(){
-        return ""; //FIXME 
+    public long getTotalStock(){
+        return _totalStock;
     }
 
-    abstract boolean checkQuantity(int quantity, Partner partner);
+    public void updateTotalStock(){
+        for(Batch b: _batches){
+            _totalStock += b.getQuantity();
+        }
+    }
+
+    abstract int checkQuantity(int quantity, Partner partner);
 
 
 

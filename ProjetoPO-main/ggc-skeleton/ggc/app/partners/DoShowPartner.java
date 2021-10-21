@@ -1,9 +1,10 @@
 package ggc.app.partners;
 
+import ggc.core.WarehouseManager;
+import pt.tecnico.uilib.Display;
+//FIXME import classes
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.core.WarehouseManager;
-//FIXME import classes
 
 /**
  * Show partner.
@@ -17,7 +18,9 @@ class DoShowPartner extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
+      String id = stringField("partnerId");
+      _display.popup(_receiver.getPartner(id));
+      //show notifications
   }
 
 }

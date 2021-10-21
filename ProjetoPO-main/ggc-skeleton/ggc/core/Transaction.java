@@ -6,6 +6,7 @@ public abstract class Transaction{
     private double _baseValue;
     private int _quantity;
     private Product _product;
+    private Partner _partner;
 
     public abstract boolean isPaid();
 
@@ -23,6 +24,10 @@ public abstract class Transaction{
 
     public Product getProduct(){
         return _product;
+    }
+
+    public Partner getPartner(){
+        return _partner;
     }
 
     public Date getPaymentDate(){

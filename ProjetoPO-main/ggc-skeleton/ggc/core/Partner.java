@@ -2,7 +2,7 @@ package ggc.core;
 
 import java.util.*;
 
-public class Partner {
+public class Partner{
     private String _name;
     private String _address;
     private String _id;
@@ -11,6 +11,8 @@ public class Partner {
     private ArrayList<Batch> _batches;
     private ArrayList<Acquisition> _acquisitions;
     private ArrayList<Sale> _sales;
+    private double _totalPayedSalesValue;
+    private double _totalAcquisitionValue;
     private ArrayList<Notification> _notifications;
 
     public Partner(String name, String address, String id){
@@ -58,15 +60,32 @@ public class Partner {
     }
 
   /*  public int getAcquisitionValue(){
+        int value = 0
         for(Acquisition acquisition:_acquisitions){
-
+            value += acquisition.getValue()
         }
+        return value;
     }
 */
+    public double getTotalSalesValue(){
+        return _totalPayedSalesValue;
+    }
+
+    public double getTotalAcquisitionValue(){
+        return _totalAcquisitionValue;
+    }
+    
+    public String toString(){
+        return _id + "|" +_name +"|"+ _address +"|"+ _status +"|"+_points+"|"+_totalAcquisitionValue+"|"+_totalPayedSalesValue;
+    }
+
     @Override
     public int hashCode(){
         return Objects.hash(_id);
     }
 
-    
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Partner && _id.equals(((Partner)obj).getId());
+    }    
 }

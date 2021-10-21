@@ -12,15 +12,13 @@ public class AggregateProduct extends Product{
     }
 
     @Override
-    boolean checkQuantity(int quantity, Partner partner) {
+    int checkQuantity(int quantity, Partner partner) {
         //FIXME nao sei o que por aqui
-        return false;
+        return quantity;
     }
 
     @Override
     public String toString() {
-    //FIXME
-    return "";    
-    //return super.toString()+"|"+_recipe.getAplha()+"|"+;
+        return super.getId()+"|"+super.getMaxPrice()+"|"+super.getTotalStock()+"|"+_recipe.getAlpha()+"|"+_recipe.getComponents();
     }
 }

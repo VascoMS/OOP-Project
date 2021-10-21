@@ -16,4 +16,10 @@ public class Component {
     public int getQuantity(){
         return _quantity;
     }
+
+    @Override
+    public String toString(){
+		return ""+_product+":"+_quantity; 
+        
+    }
 }

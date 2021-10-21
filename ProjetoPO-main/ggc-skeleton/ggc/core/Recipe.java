@@ -11,7 +11,16 @@ public class Recipe {
         _components = new ArrayList<>(components);
     }
     
+    public double getAlpha(){
+        return _alpha;
+    }
+
+    public ArrayList<Component> getComponents(){
+        return _components;
+    }
+
+    @Override
     public String toString(){
-        return ""; //FIXME
+        return ""+_components;
     }
 }

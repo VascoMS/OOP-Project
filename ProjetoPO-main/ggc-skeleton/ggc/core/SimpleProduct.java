@@ -5,14 +5,13 @@ public class SimpleProduct extends Product{
         super(id);
     }
     @Override
-    boolean checkQuantity(int quantity, Partner partner){
+    int checkQuantity(int quantity, Partner partner){
         //FIXME nao sei o que por aqui
-        return false;
+        return quantity;
     }
 
     public String toString(){
-        //FIXME
-        return "";
+        return ""+super.getId()+"|"+super.getMaxPrice()+"|"+super.getTotalStock();
     }
     
 }
