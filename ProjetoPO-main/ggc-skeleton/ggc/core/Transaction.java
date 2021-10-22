@@ -10,6 +10,15 @@ public abstract class Transaction{
 
     public abstract boolean isPaid();
 
+
+    public Transaction(int id, Date paymentDate, double baseValue, int quantity, Product product, Partner partner){
+        _id = id;
+        _paymentDate = paymentDate;
+        _baseValue = baseValue;
+        _quantity = quantity;
+        _product = product;
+        _partner = partner;
+    }
     public int getId(){
         return _id;
     }

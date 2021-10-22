@@ -4,10 +4,9 @@ public class SaleByCredit extends Sale{
     private Date _deadline;
     private double _amountPaid;
 
-    SaleByCredit(Product p, int quantity, Partner part, int deadline){
-        super(p, quantity, part);
+    SaleByCredit(int id, Date paymentDate, double baseValue, int quantity, Product product, Partner partner, int deadline){
+        super(id, paymentDate, baseValue, quantity, product, partner);
         _deadline = new Date(deadline);
-        //FIXME CONSTRUCTOR
     }
     public boolean isPaid() {
         //FIXME

@@ -1,7 +1,8 @@
 package ggc.core;
 
 public abstract class Sale extends Transaction{
-    Sale(Product product, int quantity, Partner partner){
-        //FIXME descobrir como os sacar
+    Sale(int id, Date paymentDate, double baseValue, int quantity, Product product, Partner partner){
+        super(id, paymentDate, baseValue, quantity, product, partner);
+
     }
 }

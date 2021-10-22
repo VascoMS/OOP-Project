@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ggc.app.exception.DuplicatePartnerKeyException;
-import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.ImportFileException;
 import ggc.core.exception.MissingFileAssociationException;
@@ -25,26 +23,74 @@ public class WarehouseManager {
     return _warehouse.getDate();
   }
 
+  public Product getProduct(String id) throws BadEntryException{
+    return _warehouse.getProduct(id);
+  }
+
+  public void RegisterAggregateProduct(String id, double alpha, ArrayList<Product> products, ArrayList<Integer> quantities) throws BadEntryException{
+    ArrayList<Component> components = _warehouse.createComponents(products, quantities);
+    Recipe recipe = new Recipe(alpha, components);
+    Product newProduct = new AggregateProduct(id, recipe);
+    _warehouse.addProduct(newProduct);
+  }
+
+  public void RegisterSimpleProduct(String id) throws BadEntryException{
+    Product newProduct = new SimpleProduct(id);
+    _warehouse.addProduct(newProduct);
+  }
+
   public HashMap<String,Product> getAllProductsWarehouse(){
     return _warehouse.getProducts();
+  }
+
+  public ArrayList<Product> getProductsSorted(){
+    return _warehouse.getSortedProducts();
+  }
+
+  public ArrayList<Batch> getAllBatchesWarehouse(){
+    return _warehouse.getBatches();
+  }
+
+  public void addBatch(double price, int quantity, Partner partner, Product product){
+    Batch batch = new Batch(price, quantity, partner, product);
+    _warehouse.addBatch(batch);
+  }
+  public ArrayList<Batch> getBatchesSorted(){
+    return _warehouse.getSortedBatches();
+  }
+
+  public ArrayList<Batch> getBatchesPartner(String partnerId) throws BadEntryException{
+    Partner partner = _warehouse.getPartner(partnerId);
+    return _warehouse.getBatchesPartner(this.getBatchesSorted(), partner);
+  }
+
+  public ArrayList<Batch> getBatchesProduct(String productId) throws BadEntryException{
+    Product product = _warehouse.getProduct(productId);
+    return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
   }
 
   public void incrementDate(int days){
     _warehouse.newDate(days);
   }
 
-  public void addPartner(String name, String address, String id) throws DuplicatePartnerKeyException{
+  public void addPartner(String name, String address, String id) throws BadEntryException{
     Partner newPartner = new Partner(name, address, id);
     _warehouse.addPartner(newPartner);
   }
 
-  public Partner getPartner(String id) throws UnknownPartnerKeyException{
+  public Partner getPartner(String id) throws BadEntryException{
     return _warehouse.getPartner(id);
   }
 
   public ArrayList<Partner> getSortedPartners(){
     return _warehouse.getSortedPartners();
   }
+
+  public HashMap<String, Partner> getAllPartnersWarehouse(){
+    return _warehouse.getPartners();
+  }
+
+
 
   //FIXME define other attributes
   //FIXME define constructor(s)

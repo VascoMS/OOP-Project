@@ -19,6 +19,10 @@ public class Date {
     public int difference(Date other){
         return Math.abs(other.getDays()-_days);
     }
+    @Override
+    public boolean equals(Object obj){
+        return obj instanceof Partner && _days==(((Date)obj).getDays());
+    }
 
     }
 

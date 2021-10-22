@@ -21,6 +21,12 @@ public class Recipe {
 
     @Override
     public String toString(){
-        return ""+_components;
+        String res= "";
+        for(Component c: _components){
+            if(res.compareTo("")!=0)
+                res += "#";
+            res+=c.toString();
+        }
+        return res;
     }
 }

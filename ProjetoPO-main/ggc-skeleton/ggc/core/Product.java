@@ -22,6 +22,7 @@ public abstract class Product{
 
     public void addBatch(Batch batch) {
         _batches.add(batch);
+        _totalStock += batch.getQuantity();
     }
 
     public String getId(){
@@ -36,10 +37,9 @@ public abstract class Product{
         return _totalStock;
     }
 
-    public void updateTotalStock(){
-        for(Batch b: _batches){
-            _totalStock += b.getQuantity();
-        }
+    @Override
+    public boolean equals(Object obj){
+        return obj instanceof Product && _id.equals(((Product)obj).getId());
     }
 
     abstract int checkQuantity(int quantity, Partner partner);
