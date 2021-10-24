@@ -147,8 +147,9 @@ public class Warehouse implements Serializable {
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile) throws IOException, BadEntryException /* FIXME maybe other exceptions */ {
-    //FIXME implement method
+  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException /* FIXME maybe other exceptions */ {
+    Parser parser = new Parser(warehouseManager);
+    parser.parseFile(txtfile);//FIXME implement method
   }
 
 }
