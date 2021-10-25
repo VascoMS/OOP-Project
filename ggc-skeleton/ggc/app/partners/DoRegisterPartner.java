@@ -2,8 +2,7 @@ package ggc.app.partners;
 
 import ggc.app.exception.DuplicatePartnerKeyException;
 import ggc.core.WarehouseManager;
-//FIXME import classes
-import ggc.core.exception.BadEntryException;
+import ggc.core.exception.BadEntryPartnerException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -27,7 +26,7 @@ class DoRegisterPartner extends Command<WarehouseManager> {
     String id = stringField("partnerId"); 
     try {
       _receiver.addPartner(id, name, address);
-    } catch (BadEntryException e) {
+    } catch (BadEntryPartnerException e) {
       throw new DuplicatePartnerKeyException(id);//TODO: handle exception
     }
     

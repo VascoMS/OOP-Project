@@ -20,6 +20,6 @@ public class AggregateProduct extends Product{
 
     @Override
     public String toString() {
-        return super.getId()+"|"+super.getMaxPrice()+"|"+super.getTotalStock()+"|"+_recipe.getAlpha()+"|"+_recipe.getComponents();
+        return super.getId()+"|"+(int)super.getMaxPrice()+"|"+super.getTotalStock()+"|"+_recipe.getAlpha()+"|"+_recipe.getComponents();
     }
 }

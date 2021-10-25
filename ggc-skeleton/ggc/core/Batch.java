@@ -28,7 +28,7 @@ public Product getProduct(){
 
 @Override
 public String toString(){
-    return ""+_product.getId()+"|"+_partner.getId()+"|"+_price+"|"+_quantity;
+    return ""+_product.getId()+"|"+_partner.getId()+"|"+(int)_price+"|"+_quantity;
 }
 
 Batch makeCopy(){

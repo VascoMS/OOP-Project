@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ggc.core.exception.BadEntryException;
+import ggc.core.exception.BadEntryPartnerException;
 import ggc.core.exception.ImportFileException;
 import ggc.core.exception.MissingFileAssociationException;
 import ggc.core.exception.UnavailableFileException;
@@ -59,7 +60,7 @@ public class WarehouseManager {
     return _warehouse.getSortedBatches();
   }
 
-  public ArrayList<Batch> getBatchesPartner(String partnerId) throws BadEntryException{
+  public ArrayList<Batch> getBatchesPartner(String partnerId) throws BadEntryPartnerException{
     Partner partner = _warehouse.getPartner(partnerId);
     return _warehouse.getBatchesPartner(this.getBatchesSorted(), partner);
   }
@@ -69,16 +70,16 @@ public class WarehouseManager {
     return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
   }
 
-  public void incrementDate(int days){
+  public void incrementDate(int days) throws BadEntryException{
     _warehouse.newDate(days);
   }
 
-  public void addPartner(String id, String name, String address) throws BadEntryException{
+  public void addPartner(String id, String name, String address) throws BadEntryPartnerException{
     Partner newPartner = new Partner(id, name, address);
     _warehouse.addPartner(newPartner);
   }
 
-  public Partner getPartner(String id) throws BadEntryException{
+  public Partner getPartner(String id) throws BadEntryPartnerException{
     return _warehouse.getPartner(id);
   }
 

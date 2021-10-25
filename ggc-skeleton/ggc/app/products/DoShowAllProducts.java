@@ -18,7 +18,9 @@ class DoShowAllProducts extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     //FIXME o # nos derivados
-    _display.popup(_receiver.getAllProductsWarehouse());
+    for(Object product: _receiver.getProductsSorted())
+      _display.addLine(product);
+    _display.display();
   }
 
 }

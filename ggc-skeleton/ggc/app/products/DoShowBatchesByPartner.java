@@ -1,15 +1,14 @@
 package ggc.app.products;
 
-import pt.tecnico.uilib.menus.Command;
-import pt.tecnico.uilib.menus.CommandException;
-import ggc.core.exception.BadEntryException;
+import java.util.ArrayList;
+
 import ggc.app.exception.UnknownPartnerKeyException;
-
-import java.util.*;
-
 import ggc.core.Batch;
 import ggc.core.WarehouseManager;
 //FIXME import classes
+import ggc.core.exception.BadEntryPartnerException;
+import pt.tecnico.uilib.menus.Command;
+import pt.tecnico.uilib.menus.CommandException;
 
 /**
  * Show batches supplied by partner.
@@ -31,7 +30,7 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
       _display.addLine(b.toString());
     }
     _display.display();
-    } catch (BadEntryException e){
+    } catch (BadEntryPartnerException e){
     throw new UnknownPartnerKeyException(partnerId);//TODO: handle exception
     }
     //FIXME implement command

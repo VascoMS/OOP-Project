@@ -10,19 +10,24 @@ public abstract class Product{
 
     Product(String id){
         _id=id;
+        _batches = new ArrayList<Batch>();
     }
     
     public double getMaxPrice(){
         return _maxPrice;
     }
 
-    public void updateMaxPrice(double maxPrice){
-        _maxPrice=maxPrice;
+    public void updateMaxPrice(){
+        for(Batch batch: _batches){
+            if(batch.getPrice() > _maxPrice)
+                _maxPrice = batch.getPrice();
+        }
     }
 
     public void addBatch(Batch batch) {
         _batches.add(batch);
         _totalStock += batch.getQuantity();
+        updateMaxPrice();
     }
 
     public String getId(){

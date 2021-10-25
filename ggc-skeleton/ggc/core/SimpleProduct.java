@@ -11,7 +11,7 @@ public class SimpleProduct extends Product{
     }
 
     public String toString(){
-        return ""+super.getId()+"|"+super.getMaxPrice()+"|"+super.getTotalStock();
+        return ""+super.getId()+"|"+(int)super.getMaxPrice()+"|"+super.getTotalStock();
     }
     
 }

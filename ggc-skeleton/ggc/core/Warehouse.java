@@ -2,12 +2,12 @@ package ggc.core;
 
 import java.io.IOException;
 import java.io.Serializable;
-
 // FIXME import classes (cannot import from pt.tecnico or ggc.app)
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import ggc.core.exception.BadEntryException;
+import ggc.core.exception.BadEntryPartnerException;
 
 /**
  * Class Warehouse implements a warehouse.
@@ -96,7 +96,9 @@ public class Warehouse implements Serializable {
     return batchesProduct;
   }
 
-  public void newDate(int days){
+  public void newDate(int days) throws BadEntryException{
+    if(days < 0)
+      throw new BadEntryException("Invalid date");
     _date.add(days);
   }
 
@@ -120,16 +122,16 @@ public class Warehouse implements Serializable {
     return components;
   }
 
-  public void addPartner(Partner partner) throws BadEntryException{
-    if(_partners.containsKey(partner.getId()))
-      throw new BadEntryException(partner.getId());
-    _partners.put(partner.getId(), partner);
+  public void addPartner(Partner partner) throws BadEntryPartnerException{
+    if(_partners.containsKey(partner.getId().toLowerCase()))
+      throw new BadEntryPartnerException();
+    _partners.put(partner.getId().toLowerCase(), partner);
   }
 
-  public Partner getPartner(String id) throws BadEntryException{
-    if(_partners.containsKey(id))
-      return _partners.get(id);
-    throw new BadEntryException(id);
+  public Partner getPartner(String id) throws BadEntryPartnerException{
+    if(_partners.containsKey(id.toLowerCase()))
+      return _partners.get(id.toLowerCase());
+    throw new BadEntryPartnerException();
       
   }
 

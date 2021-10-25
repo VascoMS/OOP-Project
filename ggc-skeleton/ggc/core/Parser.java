@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ggc.core.exception.BadEntryException;
+import ggc.core.exception.BadEntryPartnerException;
 
 public class Parser{
 
@@ -53,7 +54,11 @@ public class Parser{
     String id = components[1];
     String name = components[2];
     String address = components[3];
-    _store.addPartner(id, name, address);
+    try {
+      _store.addPartner(id, name, address);
+    } catch (BadEntryPartnerException e) {
+      throw new BadEntryException(id);
+    }
     // add code here to
     // register partner with id, name, address in _store;
   }
