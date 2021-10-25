@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ggc.core.exception.BadEntryException;
-import ggc.core.exception.BadEntryPartnerException;
+import ggc.core.exception.CoreDuplicatePartnerKeyException;
+import ggc.core.exception.CoreUnknownPartnerKeyException;
 
 /**
  * Class Warehouse implements a warehouse.
@@ -122,16 +123,16 @@ public class Warehouse implements Serializable {
     return components;
   }
 
-  public void addPartner(Partner partner) throws BadEntryPartnerException{
+  public void addPartner(Partner partner) throws CoreDuplicatePartnerKeyException{
     if(_partners.containsKey(partner.getId().toLowerCase()))
-      throw new BadEntryPartnerException();
+      throw new CoreDuplicatePartnerKeyException(partner.getId());
     _partners.put(partner.getId().toLowerCase(), partner);
   }
 
-  public Partner getPartner(String id) throws BadEntryPartnerException{
+  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
     if(_partners.containsKey(id.toLowerCase()))
       return _partners.get(id.toLowerCase());
-    throw new BadEntryPartnerException();
+    throw new CoreUnknownPartnerKeyException(id);
       
   }
 
@@ -149,7 +150,7 @@ public class Warehouse implements Serializable {
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException /* FIXME maybe other exceptions */ {
+  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException /* FIXME maybe other exceptions */ {
     Parser parser = new Parser(warehouseManager);
     parser.parseFile(txtfile);//FIXME implement method
   }

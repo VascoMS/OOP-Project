@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.core.Batch;
 import ggc.core.WarehouseManager;
+import ggc.core.exception.CoreUnknownPartnerKeyException;
 //FIXME import classes
-import ggc.core.exception.BadEntryPartnerException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -30,7 +30,7 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
       _display.addLine(b.toString());
     }
     _display.display();
-    } catch (BadEntryPartnerException e){
+    } catch (CoreUnknownPartnerKeyException e){
     throw new UnknownPartnerKeyException(partnerId);//TODO: handle exception
     }
     //FIXME implement command

@@ -2,7 +2,7 @@ package ggc.app.partners;
 
 import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.core.WarehouseManager;
-import ggc.core.exception.BadEntryPartnerException;
+import ggc.core.exception.CoreUnknownPartnerKeyException;
 //FIXME import classes
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -22,7 +22,7 @@ class DoShowPartner extends Command<WarehouseManager> {
       String id = stringField("partnerId");
       try {
         _display.popup(_receiver.getPartner(id));
-      } catch (BadEntryPartnerException e) {
+      } catch (CoreUnknownPartnerKeyException e) {
         throw new UnknownPartnerKeyException(id);//TODO: handle exception
       }
       //show notifications

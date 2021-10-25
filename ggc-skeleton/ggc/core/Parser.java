@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ggc.core.exception.BadEntryException;
-import ggc.core.exception.BadEntryPartnerException;
+import ggc.core.exception.CoreDuplicatePartnerKeyException;
+import ggc.core.exception.CoreUnknownPartnerKeyException;
 
 public class Parser{
 
@@ -17,7 +18,7 @@ public class Parser{
     _store = w;
   }
 
-  void parseFile(String filename) throws IOException, BadEntryException {
+  void parseFile(String filename) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException {
     try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
       String line;
 
@@ -26,7 +27,7 @@ public class Parser{
     }
   }
 
-  private void parseLine(String line) throws BadEntryException, BadEntryException {
+  private void parseLine(String line) throws BadEntryException, BadEntryException, CoreUnknownPartnerKeyException, CoreDuplicatePartnerKeyException {
     String[] components = line.split("\\|");
 
     switch (components[0]) {
@@ -47,24 +48,20 @@ public class Parser{
   }
 
   //PARTNER|id|nome|endereço
-  private void parsePartner(String[] components, String line) throws BadEntryException {
+  private void parsePartner(String[] components, String line) throws BadEntryException, CoreDuplicatePartnerKeyException {
     if (components.length != 4)
       throw new BadEntryException("Invalid partner with wrong number of fields (4): " + line);
     
     String id = components[1];
     String name = components[2];
     String address = components[3];
-    try {
-      _store.addPartner(id, name, address);
-    } catch (BadEntryPartnerException e) {
-      throw new BadEntryException(id);
-    }
+    _store.addPartner(id, name, address);
     // add code here to
     // register partner with id, name, address in _store;
   }
 
   //BATCH_S|idProduto|idParceiro|prec ̧o|stock-actual
-  private void parseSimpleProduct(String[] components, String line) throws BadEntryException {
+  private void parseSimpleProduct(String[] components, String line) throws CoreUnknownPartnerKeyException, BadEntryException {
     if (components.length != 5)
       throw new BadEntryException("Invalid number of fields (4) in simple batch description: " + line);
     
@@ -84,7 +81,7 @@ public class Parser{
     
   //BATCH_M|idProduto|idParceiro|prec ̧o|stock-actual|agravamento|componente-1:quantidade-1#...#componente-n:quantidade-n
   
-  private void parseAggregateProduct(String[] components, String line) throws BadEntryException {
+  private void parseAggregateProduct(String[] components, String line) throws BadEntryException, CoreUnknownPartnerKeyException {
     if (components.length != 7)
       throw new BadEntryException("Invalid number of fields (7) in aggregate batch description: " + line);
     

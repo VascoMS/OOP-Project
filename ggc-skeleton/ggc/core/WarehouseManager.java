@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ggc.core.exception.BadEntryException;
-import ggc.core.exception.BadEntryPartnerException;
+import ggc.core.exception.CoreDuplicatePartnerKeyException;
+import ggc.core.exception.CoreUnknownPartnerKeyException;
 import ggc.core.exception.ImportFileException;
 import ggc.core.exception.MissingFileAssociationException;
 import ggc.core.exception.UnavailableFileException;
@@ -60,7 +61,7 @@ public class WarehouseManager {
     return _warehouse.getSortedBatches();
   }
 
-  public ArrayList<Batch> getBatchesPartner(String partnerId) throws BadEntryPartnerException{
+  public ArrayList<Batch> getBatchesPartner(String partnerId) throws CoreUnknownPartnerKeyException{
     Partner partner = _warehouse.getPartner(partnerId);
     return _warehouse.getBatchesPartner(this.getBatchesSorted(), partner);
   }
@@ -74,12 +75,12 @@ public class WarehouseManager {
     _warehouse.newDate(days);
   }
 
-  public void addPartner(String id, String name, String address) throws BadEntryPartnerException{
+  public void addPartner(String id, String name, String address) throws CoreDuplicatePartnerKeyException{
     Partner newPartner = new Partner(id, name, address);
     _warehouse.addPartner(newPartner);
   }
 
-  public Partner getPartner(String id) throws BadEntryPartnerException{
+  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
     return _warehouse.getPartner(id);
   }
 
@@ -129,7 +130,7 @@ public class WarehouseManager {
    * @param textfile
    * @throws ImportFileException
    */
-  public void importFile(String textfile) throws ImportFileException {
+  public void importFile(String textfile) throws ImportFileException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException {
     try {
       _warehouse.importFile(textfile, this);
     } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ e) {
