@@ -1,8 +1,9 @@
 package ggc.core;
 
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class Product{
+public abstract class Product implements Serializable{
     private double _maxPrice;
     private String _id;
     private ArrayList<Batch> _batches;

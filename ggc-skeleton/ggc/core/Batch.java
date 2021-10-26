@@ -1,6 +1,8 @@
 package ggc.core;
 
-public class Batch {
+import java.io.Serializable;
+
+public class Batch implements Serializable{
     private double _price;
     private int _quantity;
     private Partner _partner;

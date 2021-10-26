@@ -1,7 +1,11 @@
 package ggc.core;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -104,7 +108,13 @@ public class WarehouseManager {
    * @@throws MissingFileAssociationException
    */
   public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
-    //FIXME implement serialization method
+    if(_filename.equals(""))
+      throw new MissingFileAssociationException();
+    FileOutputStream file = new FileOutputStream(_filename);
+    ObjectOutputStream out = new ObjectOutputStream(file);
+    out.writeObject(_warehouse);
+    out.close();
+    file.close();
   }
 
   /**
@@ -123,6 +133,12 @@ public class WarehouseManager {
    * @@throws UnavailableFileException
    */
   public void load(String filename) throws UnavailableFileException, ClassNotFoundException  {
+    try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))){
+      _warehouse = (Warehouse) in.readObject();
+      _filename = filename;
+    } catch(ClassNotFoundException | IOException a){
+      throw new UnavailableFileException(filename);
+    }
     //FIXME implement serialization method
   }
 
@@ -130,10 +146,10 @@ public class WarehouseManager {
    * @param textfile
    * @throws ImportFileException
    */
-  public void importFile(String textfile) throws ImportFileException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException {
+  public void importFile(String textfile) throws ImportFileException{
     try {
       _warehouse.importFile(textfile, this);
-    } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ e) {
+    } catch (IOException | BadEntryException | CoreDuplicatePartnerKeyException | CoreUnknownPartnerKeyException /* FIXME maybe other exceptions */ e) {
       throw new ImportFileException(textfile, e);
     }
   }

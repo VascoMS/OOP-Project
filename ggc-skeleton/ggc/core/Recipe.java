@@ -1,8 +1,9 @@
 package ggc.core;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Recipe {
+public class Recipe implements Serializable{
     private ArrayList<Component> _components;
     private double _alpha; //agravamento
 

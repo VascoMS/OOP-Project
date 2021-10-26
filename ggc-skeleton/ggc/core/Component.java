@@ -1,6 +1,8 @@
 package ggc.core;
 
-public class Component {
+import java.io.Serializable;
+
+public class Component implements Serializable{
     private Product _product;
     private int _quantity;
     

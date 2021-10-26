@@ -1,6 +1,8 @@
 package ggc.core;
 
-public class Notification {
+import java.io.Serializable;
+
+public class Notification implements Serializable{
     private Product _product;
     private TypeNotification _type;
 
