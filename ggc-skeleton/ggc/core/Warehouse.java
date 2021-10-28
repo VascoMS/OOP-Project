@@ -85,7 +85,6 @@ public class Warehouse implements Serializable {
       if(b.getPartner().equals(partner))
         batchesPartner.add(b);
     }
-    
     return batchesPartner;
   }
 
