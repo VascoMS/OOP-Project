@@ -34,8 +34,7 @@ public String toString(){
 }
 
 Batch makeCopy(){
-    Batch b1 = new Batch(_price, _quantity, _partner, _product);
-    return b1;
+    return new Batch(_price, _quantity, _partner, _product);
 }
 
 }

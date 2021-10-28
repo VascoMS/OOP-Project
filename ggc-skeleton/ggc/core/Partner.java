@@ -9,13 +9,13 @@ public class Partner implements Serializable{
     private String _id;
     private Status _status;
     private double _points;
-    private ArrayList<Batch> _batches;
-    private ArrayList<Acquisition> _acquisitions;
-    private ArrayList<Sale> _sales;
+    private List<Batch> _batches;
+    private List<Acquisition> _acquisitions;
+    private List<Sale> _sales;
     private double _totalSalesValue;
     private double _totalPayedSalesValue;
     private double _totalAcquisitionValue;
-    private ArrayList<Notification> _notifications;
+    private List<Notification> _notifications;
 
     public Partner(String id, String name, String address){
         _name = name;
@@ -23,6 +23,10 @@ public class Partner implements Serializable{
         _id = id;
         _points = _totalSalesValue = _totalPayedSalesValue = _totalAcquisitionValue = 0;
         _status = Status.NORMAL;
+        _sales = new ArrayList<>();
+        _batches = new ArrayList<>();
+        _acquisitions = new ArrayList<>();
+        _notifications = new ArrayList<>();
     }
 
     public String getName(){
@@ -45,30 +49,22 @@ public class Partner implements Serializable{
         return _points;
     }
 
-    public ArrayList<Batch> getBatches(){
+    public List<Batch> getBatches(){
         return _batches;
     }
 
-    public ArrayList<Acquisition> getAcquisitions(){
+    public List<Acquisition> getAcquisitions(){
         return _acquisitions;
     }
 
-    public ArrayList<Sale> getSales(){
+    public List<Sale> getSales(){
         return _sales;
     }
 
-    public ArrayList<Notification> getNotifications(){
+    public List<Notification> getNotifications(){
         return _notifications;
     }
 
-  /*  public int getAcquisitionValue(){
-        int value = 0
-        for(Acquisition acquisition:_acquisitions){
-            value += acquisition.getValue()
-        }
-        return value;
-    }
-*/
     public double getTotalSalesValue(){
         return _totalSalesValue;
     }

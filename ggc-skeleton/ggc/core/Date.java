@@ -1,6 +1,6 @@
 package ggc.core;
 import java.io.Serializable;
-import java.lang.Math;
+import java.util.Objects;
 
 public class Date implements Serializable{
     private int _days;
@@ -23,6 +23,10 @@ public class Date implements Serializable{
     @Override
     public boolean equals(Object obj){
         return obj instanceof Partner && _days==(((Date)obj).getDays());
+    }
+    @Override
+    public int hashCode(){
+        return Objects.hash(_days);
     }
 
     }

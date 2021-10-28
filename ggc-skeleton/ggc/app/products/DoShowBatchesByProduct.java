@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import ggc.app.exception.UnknownProductKeyException;
 import ggc.core.Batch;
 import ggc.core.WarehouseManager;
-import ggc.core.exception.BadEntryException;
+import ggc.core.exception.CoreUnknownProductKeyException;
 //FIXME import classes
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -31,7 +31,7 @@ class DoShowBatchesByProduct extends Command<WarehouseManager> {
       _display.addLine(b.toString());
     }
     _display.display();
-    } catch (BadEntryException e) {
+    } catch (CoreUnknownProductKeyException e) {
       throw new UnknownProductKeyException(productId);//TODO: handle exception
       
     }

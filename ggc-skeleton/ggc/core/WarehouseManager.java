@@ -1,7 +1,6 @@
 package ggc.core;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,7 +10,9 @@ import java.util.HashMap;
 
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
+import ggc.core.exception.CoreInvalidDateException;
 import ggc.core.exception.CoreUnknownPartnerKeyException;
+import ggc.core.exception.CoreUnknownProductKeyException;
 import ggc.core.exception.ImportFileException;
 import ggc.core.exception.MissingFileAssociationException;
 import ggc.core.exception.UnavailableFileException;
@@ -29,18 +30,18 @@ public class WarehouseManager {
     return _warehouse.getDate();
   }
 
-  public Product getProduct(String id) throws BadEntryException{
+  public Product getProduct(String id) throws CoreUnknownProductKeyException{
     return _warehouse.getProduct(id);
   }
 
-  public void RegisterAggregateProduct(String id, double alpha, ArrayList<Product> products, ArrayList<Integer> quantities) throws BadEntryException{
+  public void RegisterAggregateProduct(String id, double alpha, ArrayList<Product> products, ArrayList<Integer> quantities) throws CoreUnknownProductKeyException{
     ArrayList<Component> components = _warehouse.createComponents(products, quantities);
     Recipe recipe = new Recipe(alpha, components);
     Product newProduct = new AggregateProduct(id, recipe);
     _warehouse.addProduct(newProduct);
   }
 
-  public void RegisterSimpleProduct(String id) throws BadEntryException{
+  public void RegisterSimpleProduct(String id) throws CoreUnknownProductKeyException{
     Product newProduct = new SimpleProduct(id);
     _warehouse.addProduct(newProduct);
   }
@@ -70,12 +71,12 @@ public class WarehouseManager {
     return _warehouse.getBatchesPartner(this.getBatchesSorted(), partner);
   }
 
-  public ArrayList<Batch> getBatchesProduct(String productId) throws BadEntryException{
+  public ArrayList<Batch> getBatchesProduct(String productId) throws CoreUnknownProductKeyException{
     Product product = _warehouse.getProduct(productId);
     return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
   }
 
-  public void incrementDate(int days) throws BadEntryException{
+  public void incrementDate(int days) throws CoreInvalidDateException{
     _warehouse.newDate(days);
   }
 
@@ -107,14 +108,15 @@ public class WarehouseManager {
    * @@throws FileNotFoundException
    * @@throws MissingFileAssociationException
    */
-  public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
+  public void save() throws MissingFileAssociationException{
     if(_filename.equals(""))
       throw new MissingFileAssociationException();
-    FileOutputStream file = new FileOutputStream(_filename);
-    ObjectOutputStream out = new ObjectOutputStream(file);
+    try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(_filename))){
     out.writeObject(_warehouse);
-    out.close();
-    file.close();
+    } catch(IOException e){
+      e.printStackTrace();
+      //System.err.println("Falha ao guardar estado");
+    }
   }
 
   /**
@@ -123,7 +125,7 @@ public class WarehouseManager {
    * @@throws IOException
    * @@throws FileNotFoundException
    */
-  public void saveAs(String filename) throws MissingFileAssociationException, FileNotFoundException, IOException {
+  public void saveAs(String filename) throws MissingFileAssociationException{
     _filename = filename;
     save();
   }
@@ -136,7 +138,7 @@ public class WarehouseManager {
     try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))){
       _warehouse = (Warehouse) in.readObject();
       _filename = filename;
-    } catch(ClassNotFoundException | IOException a){
+    } catch(IOException a){
       throw new UnavailableFileException(filename);
     }
     //FIXME implement serialization method
@@ -149,7 +151,7 @@ public class WarehouseManager {
   public void importFile(String textfile) throws ImportFileException{
     try {
       _warehouse.importFile(textfile, this);
-    } catch (IOException | BadEntryException | CoreDuplicatePartnerKeyException | CoreUnknownPartnerKeyException /* FIXME maybe other exceptions */ e) {
+    } catch (IOException | BadEntryException | CoreDuplicatePartnerKeyException | CoreUnknownPartnerKeyException | CoreUnknownProductKeyException /* FIXME maybe other exceptions */ e) {
       throw new ImportFileException(textfile, e);
     }
   }

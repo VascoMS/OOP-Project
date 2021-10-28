@@ -22,8 +22,7 @@ public TypeNotification getType(){
 }
 
 public String toString(){
-    //FIXME nao tenho a certeza do maxprice deveria ser o menor
-    return ""+_type.name()+"|"+_product.getId()+"|"+_product.getMaxPrice();
+    return ""+_type.name()+"|"+_product.getId()+"|"+"precoMaisBaixo";
 }
 
 }

@@ -18,7 +18,6 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
   DoShowBatchesByPartner(WarehouseManager receiver) {
     super(Label.SHOW_BATCHES_SUPPLIED_BY_PARTNER, receiver);
     addStringField("partnerId", Message.requestPartnerKey());
-    //FIXME maybe add command fields
   }
 
   @Override
@@ -31,9 +30,8 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
     }
     _display.display();
     } catch (CoreUnknownPartnerKeyException e){
-    throw new UnknownPartnerKeyException(partnerId);//TODO: handle exception
+    throw new UnknownPartnerKeyException(partnerId);
     }
-    //FIXME implement command
   }
 
 }

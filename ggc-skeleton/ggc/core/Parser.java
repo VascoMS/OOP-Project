@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
 import ggc.core.exception.CoreUnknownPartnerKeyException;
+import ggc.core.exception.CoreUnknownProductKeyException;
 
 public class Parser{
 
@@ -18,7 +19,7 @@ public class Parser{
     _store = w;
   }
 
-  void parseFile(String filename) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException {
+  void parseFile(String filename) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException, CoreUnknownProductKeyException {
     try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
       String line;
 
@@ -27,7 +28,7 @@ public class Parser{
     }
   }
 
-  private void parseLine(String line) throws BadEntryException, BadEntryException, CoreUnknownPartnerKeyException, CoreDuplicatePartnerKeyException {
+  private void parseLine(String line) throws BadEntryException, CoreUnknownProductKeyException ,CoreUnknownPartnerKeyException, CoreDuplicatePartnerKeyException {
     String[] components = line.split("\\|");
 
     switch (components[0]) {
@@ -61,7 +62,7 @@ public class Parser{
   }
 
   //BATCH_S|idProduto|idParceiro|prec ̧o|stock-actual
-  private void parseSimpleProduct(String[] components, String line) throws CoreUnknownPartnerKeyException, BadEntryException {
+  private void parseSimpleProduct(String[] components, String line) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException ,BadEntryException {
     if (components.length != 5)
       throw new BadEntryException("Invalid number of fields (4) in simple batch description: " + line);
     
@@ -81,7 +82,7 @@ public class Parser{
     
   //BATCH_M|idProduto|idParceiro|prec ̧o|stock-actual|agravamento|componente-1:quantidade-1#...#componente-n:quantidade-n
   
-  private void parseAggregateProduct(String[] components, String line) throws BadEntryException, CoreUnknownPartnerKeyException {
+  private void parseAggregateProduct(String[] components, String line) throws BadEntryException, CoreUnknownProductKeyException ,CoreUnknownPartnerKeyException {
     if (components.length != 7)
       throw new BadEntryException("Invalid number of fields (7) in aggregate batch description: " + line);
     

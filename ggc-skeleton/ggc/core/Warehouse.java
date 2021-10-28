@@ -8,7 +8,9 @@ import java.util.HashMap;
 
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
+import ggc.core.exception.CoreInvalidDateException;
 import ggc.core.exception.CoreUnknownPartnerKeyException;
+import ggc.core.exception.CoreUnknownProductKeyException;
 
 /**
  * Class Warehouse implements a warehouse.
@@ -97,22 +99,22 @@ public class Warehouse implements Serializable {
     return batchesProduct;
   }
 
-  public void newDate(int days) throws BadEntryException{
+  public void newDate(int days) throws CoreInvalidDateException{
     if(days < 0)
-      throw new BadEntryException("Invalid date");
+      throw new CoreInvalidDateException(days);
     _date.add(days);
   }
 
-  public void addProduct(Product product) throws BadEntryException{
+  public void addProduct(Product product) throws CoreUnknownProductKeyException{
     if(_products.containsKey(product.getId()))
-      throw new BadEntryException(product.getId());
+      throw new CoreUnknownProductKeyException(product.getId());
     _products.put(product.getId(), product);
   }
 
-  public Product getProduct(String id) throws BadEntryException{
+  public Product getProduct(String id) throws CoreUnknownProductKeyException{
     if(_products.containsKey(id))
       return _products.get(id);
-    throw new BadEntryException(id);
+    throw new CoreUnknownProductKeyException(id);
   }
 
   public ArrayList<Component> createComponents(ArrayList<Product> products, ArrayList<Integer> quantities){
@@ -141,18 +143,15 @@ public class Warehouse implements Serializable {
     _batches.add(batch);
     batch.getProduct().addBatch(batch);
   }
-  // FIXME define attributes
-  // FIXME define contructor(s)
-  // FIXME define methods
 
   /**
    * @param txtfile filename to be loaded.
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException /* FIXME maybe other exceptions */ {
+  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException, CoreUnknownProductKeyException /* FIXME maybe other exceptions */ {
     Parser parser = new Parser(warehouseManager);
-    parser.parseFile(txtfile);//FIXME implement method
+    parser.parseFile(txtfile);
   }
 
 }

@@ -4,7 +4,6 @@ import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.app.exception.FileOpenFailedException;
 import ggc.core.WarehouseManager;
-//FIXME import classes
 import ggc.core.exception.UnavailableFileException;
 
 /**
@@ -22,16 +21,12 @@ class DoOpenFile extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    String _filename;
     try {
-      //FIXME implement command
-      _filename = stringField("filename");
-      _receiver.load(_filename);
+      _receiver.load(stringField("filename"));
     } catch (UnavailableFileException ufe) {
       throw new FileOpenFailedException(ufe.getFilename());
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
   }
-
 }

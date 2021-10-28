@@ -4,10 +4,8 @@ import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
-import java.io.IOException;
 
 import ggc.core.WarehouseManager;
-//FIXME import classes
 import ggc.core.exception.MissingFileAssociationException;
 
 /**
@@ -24,13 +22,12 @@ class DoSaveFile extends Command<WarehouseManager> {
   public final void execute() throws CommandException {
     try{
       _receiver.save();
-    } catch(IOException | MissingFileAssociationException exe){
+    } catch(MissingFileAssociationException exe){
       try{
       _receiver.saveAs(Form.requestString(Message.newSaveAs()));
-      } catch(IOException | MissingFileAssociationException ee){
-          return;
+      } catch(MissingFileAssociationException e){
+        System.err.println("Invalid filename");
         }
     }
   }
-
 }

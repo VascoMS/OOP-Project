@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Recipe implements Serializable{
-    private ArrayList<Component> _components;
-    private double _alpha; //agravamento
+    private List<Component> _components;
+    private double _alpha;
 
     public Recipe(double alpha, ArrayList<Component> components){
         _alpha=alpha;
@@ -16,7 +16,7 @@ public class Recipe implements Serializable{
         return _alpha;
     }
 
-    public ArrayList<Component> getComponents(){
+    public List<Component> getComponents(){
         return _components;
     }
 
@@ -24,7 +24,7 @@ public class Recipe implements Serializable{
     public String toString(){
         String res= "";
         for(Component c: _components){
-            if(res.compareTo("")!=0)
+            if("".compareTo(res)!=0)
                 res += "#";
             res+=c.toString();
         }

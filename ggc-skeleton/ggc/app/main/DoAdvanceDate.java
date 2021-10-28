@@ -3,7 +3,7 @@ package ggc.app.main;
 import ggc.app.exception.InvalidDateException;
 //FIXME import classes
 import ggc.core.WarehouseManager;
-import ggc.core.exception.BadEntryException;
+import ggc.core.exception.CoreInvalidDateException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -14,7 +14,7 @@ class DoAdvanceDate extends Command<WarehouseManager> {
 
   DoAdvanceDate(WarehouseManager receiver) {
     super(Label.ADVANCE_DATE, receiver);
-    addIntegerField("numberOfDays", Message.requestDaysToAdvance());//FIXME add command fields
+    addIntegerField("numberOfDays", Message.requestDaysToAdvance());
   }
 
   @Override
@@ -22,9 +22,9 @@ class DoAdvanceDate extends Command<WarehouseManager> {
     Integer i = integerField("numberOfDays");
     try {
       _receiver.incrementDate(i);
-    } catch (BadEntryException e) {
-      throw new InvalidDateException(i);//TODO: handle exception
-    }//FIXME implement command
+    } catch (CoreInvalidDateException e) {
+      throw new InvalidDateException(i);
+    }
   }
 
 }
