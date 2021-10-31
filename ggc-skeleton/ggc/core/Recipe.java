@@ -7,7 +7,7 @@ public class Recipe implements Serializable{
     private List<Component> _components;
     private double _alpha;
 
-    public Recipe(double alpha, ArrayList<Component> components){
+    public Recipe(double alpha, List<Component> components){
         _alpha=alpha;
         _components = new ArrayList<>(components);
     }

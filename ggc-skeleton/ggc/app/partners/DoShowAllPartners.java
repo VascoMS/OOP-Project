@@ -2,7 +2,6 @@ package ggc.app.partners;
 
 import ggc.core.Partner;
 import ggc.core.WarehouseManager;
-//FIXME import classes
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -21,7 +20,6 @@ class DoShowAllPartners extends Command<WarehouseManager> {
       _display.addLine(partner);
     }
     _display.display();
-      //FIXME implement command
   }
 
 }

@@ -58,23 +58,42 @@ public abstract class Product implements Serializable{
         updateMaxPrice();
     }
 
+    /**
+     * Devolve o id do produto
+     * @return id do produto 
+     */
     public String getId(){
         return _id;
     }
 
+    /**
+     * Devolve a lista de lotes do produto
+     * @return lista de lotes do produto
+     */
     public List<Batch> getBatches(){
         return _batches;
     }
 
+    /**
+     * Devolve o stock total do produto
+     * @return stock total do produto
+     */
     public long getTotalStock(){
         return _totalStock;
     }
 
+    /** substitui o metodo para comparar produtos utilizando o identificador unico
+     * @param Obj um objeto
+     * @return boolean se dois objetos sao iguais
+     */
     @Override
     public boolean equals(Object obj){
         return obj instanceof Product && _id.equals(((Product)obj).getId());
     }
 
+    /** substitui o metodo para guardar os objetos no Map de modo a certificar que dois produtos diferentes tem dois hashcodes diferentes
+     * @return int o valor do id apos a funcao hash
+     */
     @Override
     public int hashCode(){
         return Objects.hash(_id);

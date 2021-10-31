@@ -1,12 +1,11 @@
 package ggc.app.products;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.core.Batch;
 import ggc.core.WarehouseManager;
 import ggc.core.exception.CoreUnknownPartnerKeyException;
-//FIXME import classes
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -24,7 +23,7 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
   public final void execute() throws CommandException {
     String partnerId = stringField("partnerId");
     try{
-    ArrayList<Batch> batches = _receiver.getBatchesPartner(partnerId);
+    List<Batch> batches = _receiver.getBatchesPartner(partnerId);
     for(Batch b: batches){
       _display.addLine(b.toString());
     }

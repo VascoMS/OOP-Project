@@ -66,6 +66,9 @@ public String toString(){
     return ""+_product.getId()+"|"+_partner.getId()+"|"+(int)_price+"|"+_quantity;
 }
 
+/** cria uma copia de um lote
+ * @return Batch lote
+ */
 Batch makeCopy(){
     return new Batch(_price, _quantity, _partner, _product);
 }

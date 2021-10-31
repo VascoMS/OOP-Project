@@ -1,7 +1,6 @@
 package ggc.app.main;
 
 import ggc.app.exception.InvalidDateException;
-//FIXME import classes
 import ggc.core.WarehouseManager;
 import ggc.core.exception.CoreInvalidDateException;
 import pt.tecnico.uilib.menus.Command;

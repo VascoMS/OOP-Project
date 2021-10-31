@@ -16,7 +16,6 @@ class DoOpenFile extends Command<WarehouseManager> {
   DoOpenFile(WarehouseManager receiver) {
     super(Label.OPEN, receiver);
     addStringField("filename", Message.openFile());
-    //FIXME maybe add command fields
   }
 
   @Override

@@ -3,7 +3,7 @@ package ggc.core;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
@@ -12,7 +12,6 @@ import ggc.core.exception.CoreUnknownProductKeyException;
 
 public class Parser{
 
-  // It could be WarehouseManager too. Or something else.
   private WarehouseManager _store;
 
   public Parser(WarehouseManager w) {
@@ -57,8 +56,7 @@ public class Parser{
     String name = components[2];
     String address = components[3];
     _store.addPartner(id, name, address);
-    // add code here to
-    // register partner with id, name, address in _store;
+
   }
 
   //BATCH_S|idProduto|idParceiro|prec ̧o|stock-actual
@@ -90,8 +88,8 @@ public class Parser{
     String idPartner = components[2];
 
     if (!_store.getAllProductsWarehouse().containsKey(idProduct)){
-      ArrayList<Product> products = new ArrayList<>();
-      ArrayList<Integer> quantities = new ArrayList<>();
+      List<Product> products = new ArrayList<>();
+      List<Integer> quantities = new ArrayList<>();
       
       for (String component : components[6].split("#")) {
         String[] recipeComponent = component.split(":");

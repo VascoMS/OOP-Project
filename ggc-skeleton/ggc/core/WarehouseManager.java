@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
@@ -34,8 +34,8 @@ public class WarehouseManager {
     return _warehouse.getProduct(id);
   }
 
-  public void RegisterAggregateProduct(String id, double alpha, ArrayList<Product> products, ArrayList<Integer> quantities) throws CoreUnknownProductKeyException{
-    ArrayList<Component> components = _warehouse.createComponents(products, quantities);
+  public void RegisterAggregateProduct(String id, double alpha, List<Product> products, List<Integer> quantities) throws CoreUnknownProductKeyException{
+    List<Component> components = _warehouse.createComponents(products, quantities);
     Recipe recipe = new Recipe(alpha, components);
     Product newProduct = new AggregateProduct(id, recipe);
     _warehouse.addProduct(newProduct);
@@ -50,11 +50,11 @@ public class WarehouseManager {
     return _warehouse.getProducts();
   }
 
-  public ArrayList<Product> getProductsSorted(){
+  public List<Product> getProductsSorted(){
     return _warehouse.getSortedProducts();
   }
 
-  public ArrayList<Batch> getAllBatchesWarehouse(){
+  public List<Batch> getAllBatchesWarehouse(){
     return _warehouse.getBatches();
   }
 
@@ -62,16 +62,16 @@ public class WarehouseManager {
     Batch batch = new Batch(price, quantity, partner, product);
     _warehouse.addBatch(batch);
   }
-  public ArrayList<Batch> getBatchesSorted(){
+  public List<Batch> getBatchesSorted(){
     return _warehouse.getSortedBatches();
   }
 
-  public ArrayList<Batch> getBatchesPartner(String partnerId) throws CoreUnknownPartnerKeyException{
+  public List<Batch> getBatchesPartner(String partnerId) throws CoreUnknownPartnerKeyException{
     Partner partner = _warehouse.getPartner(partnerId);
     return _warehouse.getBatchesPartner(this.getBatchesSorted(), partner);
   }
 
-  public ArrayList<Batch> getBatchesProduct(String productId) throws CoreUnknownProductKeyException{
+  public List<Batch> getBatchesProduct(String productId) throws CoreUnknownProductKeyException{
     Product product = _warehouse.getProduct(productId);
     return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
   }
@@ -89,19 +89,13 @@ public class WarehouseManager {
     return _warehouse.getPartner(id);
   }
 
-  public ArrayList<Partner> getSortedPartners(){
+  public List<Partner> getSortedPartners(){
     return _warehouse.getSortedPartners();
   }
 
   public HashMap<String, Partner> getAllPartnersWarehouse(){
     return _warehouse.getPartners();
   }
-
-
-
-  //FIXME define other attributes
-  //FIXME define constructor(s)
-  //FIXME define other methods
 
   /**
    * @@throws IOException
@@ -141,7 +135,6 @@ public class WarehouseManager {
     } catch(IOException a){
       throw new UnavailableFileException(filename);
     }
-    //FIXME implement serialization method
   }
 
   /**

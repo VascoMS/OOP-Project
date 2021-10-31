@@ -5,7 +5,6 @@ import java.util.Comparator;
 
 public class BatchComparator implements Comparator<Batch> {
     public int compare(Batch b1, Batch b2){
-        //FIXME produto>parceiro>preco>stock
         if(b1.getProduct().getId().toUpperCase().equals(b2.getProduct().getId().toUpperCase())){
             if(b1.getPartner().getId().toUpperCase().equals((b2.getPartner().getId().toUpperCase()))){
                 if(b1.getPrice()-b2.getPrice()==0){

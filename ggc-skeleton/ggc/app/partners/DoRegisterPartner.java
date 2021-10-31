@@ -16,7 +16,6 @@ class DoRegisterPartner extends Command<WarehouseManager> {
     addStringField("partnerId", Message.requestPartnerKey());
     addStringField("partnerName", Message.requestPartnerName());
     addStringField("partnerAddress", Message.requestPartnerAddress());
-    //FIXME add command fields
   }
 
   @Override
@@ -27,12 +26,8 @@ class DoRegisterPartner extends Command<WarehouseManager> {
     try {
       _receiver.addPartner(id, name, address);
     } catch (CoreDuplicatePartnerKeyException e) {
-      throw new DuplicatePartnerKeyException(id);//TODO: handle exception
+      throw new DuplicatePartnerKeyException(id);
     }
-    
-      //TODO: handle exception
-    
-    //FIXME implement command
   }
 
 }

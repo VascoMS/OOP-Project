@@ -7,7 +7,6 @@ public class BreakdownSale extends Sale{
     }
 
     public boolean isPaid() {
-        //FIXME
         return false;
         
     }

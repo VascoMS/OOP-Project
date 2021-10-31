@@ -2,9 +2,7 @@ package ggc.core;
 
 import java.io.IOException;
 import java.io.Serializable;
-// FIXME import classes (cannot import from pt.tecnico or ggc.app)
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
@@ -22,7 +20,7 @@ public class Warehouse implements Serializable {
   private Date _date;
   private int _nextTransactionId;
   private HashMap<String,Product> _products;
-  private ArrayList<Batch> _batches;
+  private List<Batch> _batches;
   private HashMap<String,Partner> _partners;
   private HashMap<Integer, Transaction> _transactions;
 
@@ -46,8 +44,8 @@ public class Warehouse implements Serializable {
     return _products;
   }
 
-  public ArrayList<Product> getSortedProducts(){
-    ArrayList<Product> products = new ArrayList<Product>();
+  public List<Product> getSortedProducts(){
+    List<Product> products = new ArrayList<Product>();
     for (String i : _products.keySet()) {
       products.add(_products.get(i));
     }
@@ -59,8 +57,8 @@ public class Warehouse implements Serializable {
     return _partners;
   }
 
-  public ArrayList<Partner> getSortedPartners(){
-    ArrayList<Partner> partners = new ArrayList<Partner>();
+  public List<Partner> getSortedPartners(){
+    List<Partner> partners = new ArrayList<Partner>();
     for (String i : _partners.keySet()) {
       partners.add(_partners.get(i));
     }
@@ -68,19 +66,19 @@ public class Warehouse implements Serializable {
     return partners;
   }
 
-  public ArrayList<Batch> getBatches(){
+  public List<Batch> getBatches(){
     return _batches;
   }
 
-  public ArrayList<Batch> getSortedBatches(){
-    ArrayList<Batch> batches = new ArrayList<Batch>();
+  public List<Batch> getSortedBatches(){
+    List<Batch> batches = new ArrayList<Batch>();
     batches.addAll(_batches);
     batches.sort(new BatchComparator());
     return batches;
   }
 
-  public ArrayList<Batch> getBatchesPartner(ArrayList<Batch> sortedBatches, Partner partner){
-    ArrayList<Batch> batchesPartner = new ArrayList<>();
+  public List<Batch> getBatchesPartner(List<Batch> sortedBatches, Partner partner){
+    List<Batch> batchesPartner = new ArrayList<>();
     for(Batch b: sortedBatches){
       if(b.getPartner().equals(partner))
         batchesPartner.add(b);
@@ -88,8 +86,8 @@ public class Warehouse implements Serializable {
     return batchesPartner;
   }
 
-  public ArrayList<Batch> getBatchesProduct(ArrayList<Batch> sortedBatches, Product product){
-    ArrayList<Batch> batchesProduct = new ArrayList<>();
+  public List<Batch> getBatchesProduct(List<Batch> sortedBatches, Product product){
+    List<Batch> batchesProduct = new ArrayList<>();
     for(Batch b: sortedBatches){
       if(b.getProduct().equals(product))
         batchesProduct.add(b);
@@ -116,8 +114,8 @@ public class Warehouse implements Serializable {
     throw new CoreUnknownProductKeyException(id);
   }
 
-  public ArrayList<Component> createComponents(ArrayList<Product> products, ArrayList<Integer> quantities){
-    ArrayList<Component> components = new ArrayList<>();
+  public List<Component> createComponents(List<Product> products, List<Integer> quantities){
+    List<Component> components = new ArrayList<>();
     for(int i=0; i<quantities.size(); i++){
       components.add(new Component(quantities.get(i), products.get(i)));
     }
@@ -148,7 +146,7 @@ public class Warehouse implements Serializable {
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException, CoreUnknownProductKeyException /* FIXME maybe other exceptions */ {
+  void importFile(String txtfile, WarehouseManager warehouseManager) throws IOException, BadEntryException, CoreDuplicatePartnerKeyException, CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
     Parser parser = new Parser(warehouseManager);
     parser.parseFile(txtfile);
   }
