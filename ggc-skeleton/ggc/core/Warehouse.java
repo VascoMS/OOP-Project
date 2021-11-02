@@ -2,13 +2,13 @@ package ggc.core;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
-import ggc.core.exception.BadEntryException;
-import ggc.core.exception.CoreDuplicatePartnerKeyException;
-import ggc.core.exception.CoreInvalidDateException;
-import ggc.core.exception.CoreUnknownPartnerKeyException;
-import ggc.core.exception.CoreUnknownProductKeyException;
+import ggc.core.exception.*;
+
 
 /**
  * Class Warehouse implements a warehouse.
@@ -19,6 +19,8 @@ public class Warehouse implements Serializable {
   private static final long serialVersionUID = 202109192006L;
   private Date _date;
   private int _nextTransactionId;
+  private double _accountingBalance;
+  private double _availableBalance;
   private HashMap<String,Product> _products;
   private List<Batch> _batches;
   private HashMap<String,Partner> _partners;
@@ -30,6 +32,8 @@ public class Warehouse implements Serializable {
     _batches = new ArrayList<>();
     _partners = new HashMap<>();
     _transactions = new HashMap<>();
+    _accountingBalance = 0;
+    _availableBalance = 0;
   }
 
   public Date getDate(){
@@ -40,28 +44,55 @@ public class Warehouse implements Serializable {
     return _nextTransactionId;
   }
 
-  public HashMap<String,Product> getProducts(){
-    return _products;
+  public double getAvailableBalance(){
+    return _availableBalance;
+  }
+
+  public double getAccountingBalance(){
+    return _accountingBalance;
+  }
+
+  public Transaction getTransaction(int id) throws CoreUnknownTransactionKeyException{
+    if(_transactions.containsKey(id))
+      return _transactions.get(id);
+    throw new CoreUnknownTransactionKeyException(id);
+  }
+
+  public List<Transaction> getTransactions(){
+    List<Transaction> transactions = new ArrayList<>();
+    transactions.addAll(_transactions.values());
+    return transactions;
+  }
+
+  public List<Product> getProducts(){
+    List<Product> products = new ArrayList<>();
+    products.addAll(_products.values());
+    return products;
   }
 
   public List<Product> getSortedProducts(){
-    List<Product> products = new ArrayList<Product>();
-    for (String i : _products.keySet()) {
-      products.add(_products.get(i));
-    }
+    List<Product> products = getProducts();
     products.sort(new ProductComparator());
     return products;
   }
 
-  public HashMap<String,Partner> getPartners(){
-    return _partners;
+  public List<Partner> getPartners(){
+    List<Partner> partners = new ArrayList<>();
+    partners.addAll(_partners.values());
+    return partners;
+  }
+
+  public boolean hasProduct(String id){
+    try {
+      getProduct(id);
+      return true;
+    } catch (CoreUnknownProductKeyException e) {
+      return false;
+    }
   }
 
   public List<Partner> getSortedPartners(){
-    List<Partner> partners = new ArrayList<Partner>();
-    for (String i : _partners.keySet()) {
-      partners.add(_partners.get(i));
-    }
+    List<Partner> partners = getPartners();
     partners.sort(new PartnerComparator());
     return partners;
   }
@@ -71,10 +102,9 @@ public class Warehouse implements Serializable {
   }
 
   public List<Batch> getSortedBatches(){
-    List<Batch> batches = new ArrayList<Batch>();
-    batches.addAll(_batches);
+    List<Batch> batches = getBatches();
     batches.sort(new BatchComparator());
-    return batches;
+    return Collections.unmodifiableList(batches);
   }
 
   public List<Batch> getBatchesPartner(List<Batch> sortedBatches, Partner partner){
@@ -96,15 +126,13 @@ public class Warehouse implements Serializable {
     return batchesProduct;
   }
 
-  public void newDate(int days) throws CoreInvalidDateException{
+  public void advanceDate(int days) throws CoreInvalidDateException{
     if(days < 0)
       throw new CoreInvalidDateException(days);
     _date.add(days);
   }
 
-  public void addProduct(Product product) throws CoreUnknownProductKeyException{
-    if(_products.containsKey(product.getId()))
-      throw new CoreUnknownProductKeyException(product.getId());
+  public void addProduct(Product product) {
     _products.put(product.getId(), product);
   }
 
@@ -133,6 +161,11 @@ public class Warehouse implements Serializable {
       return _partners.get(id.toLowerCase());
     throw new CoreUnknownPartnerKeyException(id);
       
+  }
+
+  public void registerAcquisition(Partner partner, String productId, double productPrice, int quantity){
+    _transactions.put(_nextTransactionId++, new Acquisition(_nextTransactionId, _date, productPrice, quantity, _products.get(productId), partner));
+    
   }
 
 

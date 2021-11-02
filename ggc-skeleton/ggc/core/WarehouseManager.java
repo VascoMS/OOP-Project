@@ -5,17 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.List;
 
-import ggc.core.exception.BadEntryException;
-import ggc.core.exception.CoreDuplicatePartnerKeyException;
-import ggc.core.exception.CoreInvalidDateException;
-import ggc.core.exception.CoreUnknownPartnerKeyException;
-import ggc.core.exception.CoreUnknownProductKeyException;
-import ggc.core.exception.ImportFileException;
-import ggc.core.exception.MissingFileAssociationException;
-import ggc.core.exception.UnavailableFileException;
+import ggc.core.exception.*;
 
 /** Façade for access. */
 public class WarehouseManager {
@@ -34,19 +26,27 @@ public class WarehouseManager {
     return _warehouse.getProduct(id);
   }
 
-  public void RegisterAggregateProduct(String id, double alpha, List<Product> products, List<Integer> quantities) throws CoreUnknownProductKeyException{
+  public boolean hasProduct(String id){
+    return _warehouse.hasProduct(id);
+  }
+
+  public void registerAggregateProduct(String id, double alpha, List<Product> products, List<Integer> quantities){
     List<Component> components = _warehouse.createComponents(products, quantities);
     Recipe recipe = new Recipe(alpha, components);
     Product newProduct = new AggregateProduct(id, recipe);
     _warehouse.addProduct(newProduct);
   }
 
-  public void RegisterSimpleProduct(String id) throws CoreUnknownProductKeyException{
+  public void registerSimpleProduct(String id){
     Product newProduct = new SimpleProduct(id);
     _warehouse.addProduct(newProduct);
   }
 
-  public HashMap<String,Product> getAllProductsWarehouse(){
+  public void registerAcquisition(Partner partner, String productId, double productPrice, int quantity){
+    _warehouse.registerAcquisition(partner, productId, productPrice, quantity);
+  }
+
+  public List<Product> getAllProductsWarehouse(){
     return _warehouse.getProducts();
   }
 
@@ -77,7 +77,7 @@ public class WarehouseManager {
   }
 
   public void incrementDate(int days) throws CoreInvalidDateException{
-    _warehouse.newDate(days);
+    _warehouse.advanceDate(days);
   }
 
   public void addPartner(String id, String name, String address) throws CoreDuplicatePartnerKeyException{
@@ -93,8 +93,20 @@ public class WarehouseManager {
     return _warehouse.getSortedPartners();
   }
 
-  public HashMap<String, Partner> getAllPartnersWarehouse(){
+  public List<Partner> getAllPartnersWarehouse(){
     return _warehouse.getPartners();
+  }
+
+  public double getAccountingBalance(){
+    return _warehouse.getAccountingBalance();
+  }
+
+  public double getAvailableBalance(){
+    return _warehouse.getAvailableBalance();
+  }
+
+  public Transaction getTransaction(int id) throws CoreUnknownTransactionKeyException{
+    return _warehouse.getTransaction(id);
   }
 
   /**

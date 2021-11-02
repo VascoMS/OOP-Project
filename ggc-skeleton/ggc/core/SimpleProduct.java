@@ -4,6 +4,7 @@ public class SimpleProduct extends Product{
     SimpleProduct(String id){
         super(id);
     }
+    
     @Override
     int checkQuantity(int quantity, Partner partner){
         return quantity;

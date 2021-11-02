@@ -69,8 +69,8 @@ public class Parser{
     double price = Double.parseDouble(components[3]);
     int stock = Integer.parseInt(components[4]);
     
-    if(!_store.getAllProductsWarehouse().containsKey(idProduct))
-      _store.RegisterSimpleProduct(idProduct);
+    if(!_store.hasProduct(idProduct))
+      _store.registerSimpleProduct(idProduct);
     
     Product product = _store.getProduct(idProduct); 
     Partner partner = _store.getPartner(idPartner);
@@ -87,7 +87,7 @@ public class Parser{
     String idProduct = components[1];
     String idPartner = components[2];
 
-    if (!_store.getAllProductsWarehouse().containsKey(idProduct)){
+    if (!_store.hasProduct(idProduct)){
       List<Product> products = new ArrayList<>();
       List<Integer> quantities = new ArrayList<>();
       
@@ -98,7 +98,7 @@ public class Parser{
         quantities.add(Integer.parseInt(recipeComponent[1]));
       }
       double aggravation=Double.parseDouble(components[5]);
-      _store.RegisterAggregateProduct(idProduct, aggravation, products, quantities);
+      _store.registerAggregateProduct(idProduct, aggravation, products, quantities);
     }
      
     Product product = _store.getProduct(idProduct);
