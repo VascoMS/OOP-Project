@@ -40,7 +40,7 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
     productId = Form.requestString(Message.requestProductKey());
     if(!_receiver.hasProduct(productId)){
         String hasRecipe = Form.requestString(Message.requestAddRecipe());
-        if(hasRecipe.equals("yes")){
+        if(hasRecipe.equals("sim")){
           List<Product> products = new ArrayList<>();
           List<Integer> quantities = new ArrayList<>();
           int numberComponents = Form.requestInteger(Message.requestNumberOfComponents());

@@ -7,7 +7,7 @@ public class Partner implements Serializable{
     private String _name;
     private String _address;
     private String _id;
-    private Status _status;
+    private PartnerStatus _status;
     private double _points;
     private List<Batch> _batches;
     private List<Acquisition> _acquisitions;
@@ -22,7 +22,7 @@ public class Partner implements Serializable{
         _address = address;
         _id = id;
         _points = _totalSalesValue = _totalPayedSalesValue = _totalAcquisitionValue = 0;
-        _status = Status.NORMAL;
+        _status = new NormalStatus();
         _sales = new ArrayList<>();
         _batches = new ArrayList<>();
         _acquisitions = new ArrayList<>();
@@ -39,10 +39,6 @@ public class Partner implements Serializable{
 
     public String getId(){
         return _id;
-    }
-
-    public Status getStatus(){
-        return _status;
     }
 
     public double getPoints(){

@@ -18,7 +18,7 @@ public class Date implements Serializable{
     }
 
     public int difference(Date other){
-        return Math.abs(other.getDays()-_days);
+        return other.getDays()-_days;
     }
     @Override
     public boolean equals(Object obj){
