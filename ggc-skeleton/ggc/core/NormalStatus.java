@@ -13,7 +13,7 @@ public class NormalStatus implements PartnerStatus, Serializable{
         if(0 < deadline.difference(currentDate) && deadline.difference(currentDate) <= period)
             return 0.05 * deadline.difference(currentDate);
         if(deadline.difference(currentDate) > period)
-            return 0.05*period + 0.1*(deadline.difference(currentDate) - period);
+            return 0.1*deadline.difference(currentDate);
         return 0;
     }
 

@@ -1,7 +1,9 @@
 package ggc.core;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
  /**
  * Representa um produto 
@@ -82,6 +84,12 @@ public abstract class Product implements Serializable{
         return _totalStock;
     }
 
+    public List<Batch> getBatchesSortedByPrice(){
+        List<Batch> sortedBatches = new ArrayList<>(_batches);
+        sortedBatches.sort(new BatchPriceComparator());
+        return sortedBatches;
+    }
+
     /** substitui o metodo para comparar produtos utilizando o identificador unico
      * @param Obj um objeto
      * @return boolean se dois objetos sao iguais
@@ -99,7 +107,7 @@ public abstract class Product implements Serializable{
         return Objects.hash(_id);
     }
 
-    abstract int checkQuantity(int quantity, Partner partner);
+    abstract boolean checkQuantity(int quantity, Partner partner);
 
 
 

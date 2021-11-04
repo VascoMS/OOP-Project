@@ -72,6 +72,15 @@ public class Partner implements Serializable{
     public double getTotalAcquisitionValue(){
         return _totalAcquisitionValue;
     }
+
+    public void addAcquisition(Acquisition transaction){
+        _acquisitions.add(transaction);
+        _totalAcquisitionValue+= transaction.getBaseValue();
+    }
+
+    public void addBatch(Batch batch){
+        _batches.add(batch);
+    }
     
     public String toString(){
         return _id + "|" +_name +"|"+ _address +"|"+ _status +"|"+(long)_points+"|"+(long)_totalAcquisitionValue+"|"+(long)_totalSalesValue+"|"+(long)_totalPayedSalesValue;

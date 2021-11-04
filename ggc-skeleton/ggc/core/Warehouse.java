@@ -6,8 +6,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import ggc.core.exception.*;
+import ggc.core.exception.BadEntryException;
+import ggc.core.exception.CoreDuplicatePartnerKeyException;
+import ggc.core.exception.CoreInvalidDateException;
+import ggc.core.exception.CoreUnknownPartnerKeyException;
+import ggc.core.exception.CoreUnknownProductKeyException;
+import ggc.core.exception.CoreUnknownTransactionKeyException;
 
 
 /**
@@ -21,10 +27,10 @@ public class Warehouse implements Serializable {
   private int _nextTransactionId;
   private double _accountingBalance;
   private double _availableBalance;
-  private HashMap<String,Product> _products;
+  private Map<String,Product> _products;
   private List<Batch> _batches;
-  private HashMap<String,Partner> _partners;
-  private HashMap<Integer, Transaction> _transactions;
+  private Map<String,Partner> _partners;
+  private Map<Integer, Transaction> _transactions;
 
   public Warehouse(){
     _date = new Date(0);
@@ -162,16 +168,40 @@ public class Warehouse implements Serializable {
     throw new CoreUnknownPartnerKeyException(id);
       
   }
+//REGISTER OS PRODUTOS
+  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity) throws CoreUnknownPartnerKeyException{
+    Partner partner = getPartner(partnerId);
+    Product product;
+    try {
+      product = getProduct(productId);
+    } catch (CoreUnknownProductKeyException e) {
+      product = new SimpleProduct(productId);
+      addProduct(product);
+    }
+    Acquisition transaction = new Acquisition(_nextTransactionId, _date, productPrice, quantity, product, partner);
+    _transactions.put(_nextTransactionId++, transaction);
+    partner.addAcquisition(transaction);
+    addBatch(new Batch(productPrice, quantity, partner, product));
+  }
 
-  public void registerAcquisition(Partner partner, String productId, double productPrice, int quantity){
-    _transactions.put(_nextTransactionId++, new Acquisition(_nextTransactionId, _date, productPrice, quantity, _products.get(productId), partner));
-    
+  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity, List<String> productsIDs, List<Integer> quantities, double alpha, int numberComponents) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
+    Partner partner = getPartner(partnerId);
+    List<Component> components = new ArrayList<>();
+    for(int i = 0;i < numberComponents; i++){
+      components.add(new Component(quantities.get(i), getProduct(productsIDs.get(i))));
+    }
+    addProduct(new AggregateProduct(productId, new Recipe(alpha, components)));
+    Acquisition transaction = new Acquisition(_nextTransactionId, _date, productPrice, quantity, _products.get(productId), partner);
+    _transactions.put(_nextTransactionId++, transaction);
+    partner.addAcquisition(transaction);
+    addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
   }
 
 
   public void addBatch(Batch batch){
     _batches.add(batch);
     batch.getProduct().addBatch(batch);
+    batch.getPartner().addBatch(batch);
   }
 
   /**

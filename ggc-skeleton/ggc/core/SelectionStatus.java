@@ -13,7 +13,7 @@ public class SelectionStatus implements PartnerStatus, Serializable{
         if(1 < deadline.difference(currentDate) && deadline.difference(currentDate) <= period)
             return 0.02 * deadline.difference(currentDate);
         if(deadline.difference(currentDate) > period)
-            return 0.02*(period-1) + 0.05*(deadline.difference(currentDate) - period);
+            return 0.05*deadline.difference(currentDate);
         return 0;
     }
 

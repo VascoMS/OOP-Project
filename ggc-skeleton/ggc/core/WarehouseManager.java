@@ -18,9 +18,17 @@ public class WarehouseManager {
   /** The warehouse itself. */
   private Warehouse _warehouse = new Warehouse();
 
+  //DATE
+
   public Date getDateWarehouse(){
     return _warehouse.getDate();
   }
+
+  public void incrementDate(int days) throws CoreInvalidDateException{
+    _warehouse.advanceDate(days);
+  }
+
+  //PRODUCTS
 
   public Product getProduct(String id) throws CoreUnknownProductKeyException{
     return _warehouse.getProduct(id);
@@ -42,10 +50,6 @@ public class WarehouseManager {
     _warehouse.addProduct(newProduct);
   }
 
-  public void registerAcquisition(Partner partner, String productId, double productPrice, int quantity){
-    _warehouse.registerAcquisition(partner, productId, productPrice, quantity);
-  }
-
   public List<Product> getAllProductsWarehouse(){
     return _warehouse.getProducts();
   }
@@ -53,6 +57,40 @@ public class WarehouseManager {
   public List<Product> getProductsSorted(){
     return _warehouse.getSortedProducts();
   }
+
+  //PARTNERS
+
+  public void addPartner(String id, String name, String address) throws CoreDuplicatePartnerKeyException{
+    Partner newPartner = new Partner(id, name, address);
+    _warehouse.addPartner(newPartner);
+  }
+
+  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
+    return _warehouse.getPartner(id);
+  }
+
+  public List<Partner> getSortedPartners(){
+    return _warehouse.getSortedPartners();
+  }
+
+  public List<Partner> getAllPartnersWarehouse(){
+    return _warehouse.getPartners();
+  }
+
+  //TRANSACTIONS
+
+  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity) throws CoreUnknownPartnerKeyException{
+    _warehouse.registerAcquisition(partnerId, productId, productPrice, quantity);
+  }
+
+  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity, List<String> products, List<Integer> quantities, double alpha, int numberComponents) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
+    _warehouse.registerAcquisition(partnerId, productId, productPrice, quantity, products, quantities, alpha, numberComponents);
+  }
+  public Transaction getTransaction(int id) throws CoreUnknownTransactionKeyException{
+    return _warehouse.getTransaction(id);
+  }
+
+  //BATCHES
 
   public List<Batch> getAllBatchesWarehouse(){
     return _warehouse.getBatches();
@@ -75,27 +113,9 @@ public class WarehouseManager {
     Product product = _warehouse.getProduct(productId);
     return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
   }
+  
 
-  public void incrementDate(int days) throws CoreInvalidDateException{
-    _warehouse.advanceDate(days);
-  }
-
-  public void addPartner(String id, String name, String address) throws CoreDuplicatePartnerKeyException{
-    Partner newPartner = new Partner(id, name, address);
-    _warehouse.addPartner(newPartner);
-  }
-
-  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
-    return _warehouse.getPartner(id);
-  }
-
-  public List<Partner> getSortedPartners(){
-    return _warehouse.getSortedPartners();
-  }
-
-  public List<Partner> getAllPartnersWarehouse(){
-    return _warehouse.getPartners();
-  }
+// BALANCE
 
   public double getAccountingBalance(){
     return _warehouse.getAccountingBalance();
@@ -105,9 +125,6 @@ public class WarehouseManager {
     return _warehouse.getAvailableBalance();
   }
 
-  public Transaction getTransaction(int id) throws CoreUnknownTransactionKeyException{
-    return _warehouse.getTransaction(id);
-  }
 
   /**
    * @@throws IOException

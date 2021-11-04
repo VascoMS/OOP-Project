@@ -5,8 +5,6 @@ import java.util.List;
 
 import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.app.exception.UnknownProductKeyException;
-import ggc.core.Partner;
-import ggc.core.Product;
 import ggc.core.WarehouseManager;
 import ggc.core.exception.CoreUnknownPartnerKeyException;
 import ggc.core.exception.CoreUnknownProductKeyException;
@@ -21,49 +19,49 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
 
   public DoRegisterAcquisitionTransaction(WarehouseManager receiver) {
     super(Label.REGISTER_ACQUISITION_TRANSACTION, receiver);
+    addIntegerField("partnerId", Message.requestPartnerKey());
+    addIntegerField("productId", Message.requestProductKey());
+    addIntegerField("price", Message.requestPrice());
+    addIntegerField("amount", Message.requestAmount());
   }
 
   @Override
   public final void execute() throws CommandException {
-    String partnerId;
-    String productId;
-    double productPrice;
-    int productAmount;
-    Partner partner;
-    
-    partnerId = Form.requestString(Message.requestPartnerKey());
-    try{ 
-    partner = _receiver.getPartner(partnerId);
-    } catch(CoreUnknownPartnerKeyException pa){
-      throw new UnknownPartnerKeyException(partnerId);
-    }
-    productId = Form.requestString(Message.requestProductKey());
+    double productPrice=integerField("price");
+    int productAmount = integerField("amount");
+    List<String> products = new ArrayList<>();
+    List<Integer> quantities = new ArrayList<>();
+    String partnerId = stringField("partnerId");
+    String productId = stringField("productId");
+    int numberComponents;
     if(!_receiver.hasProduct(productId)){
-        String hasRecipe = Form.requestString(Message.requestAddRecipe());
-        if(hasRecipe.equals("sim")){
-          List<Product> products = new ArrayList<>();
-          List<Integer> quantities = new ArrayList<>();
-          int numberComponents = Form.requestInteger(Message.requestNumberOfComponents());
-          double alpha = Form.requestReal(Message.requestAlpha());
-          for(int i = 0; i < numberComponents; i++){
-            String componentProductId = Form.requestString(Message.requestProductKey());
-            int componentProductAmount = Form.requestInteger(Message.requestAmount());
-            try{
-              products.add(_receiver.getProduct(componentProductId));
-              quantities.add(componentProductAmount);
-            } catch(CoreUnknownProductKeyException pr){
-              throw new UnknownProductKeyException(componentProductId);
-              } 
-          }
-          _receiver.registerAggregateProduct(productId, alpha, products, quantities);
+      String hasRecipe = Form.requestString(Message.requestAddRecipe());
+      if(hasRecipe.equals("s")){
+        numberComponents = Form.requestInteger(Message.requestNumberOfComponents());
+        double alpha = Form.requestReal(Message.requestAlpha());
+        int i = 0;
+        while(i++ < numberComponents){
+          String componentProductId = Form.requestString(Message.requestProductKey());
+          int componentProductAmount = Form.requestInteger(Message.requestAmount());
+          products.add(componentProductId);
+          quantities.add(componentProductAmount);  
         }
-        else{
-          _receiver.registerSimpleProduct(productId);
+        try{
+          _receiver.registerAcquisition(partnerId, productId, productPrice, productAmount, products, quantities, alpha, numberComponents);
+          return;
+        } catch(CoreUnknownPartnerKeyException ex){
+            throw new UnknownPartnerKeyException(partnerId);
+        } catch(CoreUnknownProductKeyException ex){
+            throw new UnknownProductKeyException(ex.getId());
         }
       }
-    productPrice = Form.requestReal(Message.requestPrice());
-    productAmount = Form.requestInteger(Message.requestAmount());
-    _receiver.registerAcquisition(partner, productId, productPrice, productAmount);
-  }
+    }
+      try{
+      _receiver.registerAcquisition(partnerId, productId, productPrice, productAmount);
+      } catch(CoreUnknownPartnerKeyException ex){
+          throw new UnknownPartnerKeyException(partnerId);
+      }
 
 }
+}
+      

@@ -6,7 +6,7 @@ public class SimpleProduct extends Product{
     }
     
     @Override
-    int checkQuantity(int quantity, Partner partner){
+    boolean checkQuantity(int quantity, Partner partner){
         return quantity;
     }
 
