@@ -59,6 +59,28 @@ public abstract class Product implements Serializable{
         }
     }
 
+    public double getLowestPrice(){
+        if(_batches==null)
+            return _maxPrice;
+        double lowPrice = _maxPrice;
+        for(Batch batch : _batches){
+            if(batch.getPrice() < lowPrice)
+                lowPrice = batch.getPrice();
+        }
+        return lowPrice;
+    }
+
+    public Batch getLowestBatch(){
+        if(_batches==null)
+            return null;
+        Batch lowBatch = _batches.get(0);
+        for(Batch batch : _batches){
+            if(batch.getPrice() < lowBatch.getPrice())
+                lowBatch = batch;
+        }
+        return lowBatch;
+    }
+
     /**
      * Adiciona um lote à coleção que guarda os lotes onde o produto está contido.
      * @param batch lote a adicionar.

@@ -2,7 +2,7 @@ package ggc.core;
 
 public class BreakdownSale extends Sale{
 
-    BreakdownSale(int id, double baseValue, int quantity, Product product, Partner partner, int deadline){
+    BreakdownSale(int id, double baseValue, int quantity, Product product, Partner partner){
         super(id, baseValue, quantity, product, partner);
     }
 
@@ -11,10 +11,7 @@ public class BreakdownSale extends Sale{
     }
 
     public double calculatePayment(Date date){
-        double payment=0;
-        //actual math
-        super.getPartner().updatePayedSales(payment);
-        return payment;
+        return super.getBaseValue();
     }
 
 }

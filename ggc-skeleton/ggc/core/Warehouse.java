@@ -161,6 +161,35 @@ public class Warehouse implements Serializable {
       sale.getPartner().updatePoints(_date, sale);
   }
 
+  public void registerBreakdownSale(String partnerId, String productId, int amount) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException, CoreUnavailableProductException{
+    Partner partner = getPartner(partnerId);
+    Product product = getProduct(productId);
+    if(!product.checkQuantity(amount, partner))
+      throw new CoreUnavailableProductException(product.getId(), product.getTotalStock());
+    if(!(product instanceof AggregateProduct))
+      return;
+    AggregateProduct aggregateProduct = (AggregateProduct) product;
+    List<Batch> batches = product.getBatches();
+    double aggregateProductValue = calculateBaseValueAndUpdateBatches(product, amount, batches);
+    double componentsValue=0;
+    List<Component> components = aggregateProduct.getRecipe().getComponents();
+    for(int i=0; i < components.size(); i++){
+      double price = components.get(i).getProduct().getLowestPrice();
+      int quantity = components.get(i).getQuantity();
+      componentsValue += price*quantity;
+      addBatch(new Batch(price, quantity, partner, product));
+    }
+    //cada produto derivado da este valor
+    componentsValue *= amount;
+    double transactionCost = Math.abs(aggregateProductValue - componentsValue);
+    updateAccountingBalance(transactionCost);
+    updateAvailableBalance(transactionCost);
+    Transaction transaction = new BreakdownSale(_nextTransactionId, transactionCost, amount, product, partner);
+    _transactions.put(_nextTransactionId++, transaction);
+    partner.addSale((Sale)transaction, _date);
+    
+  }
+
   public void registerSaleByCredit(String productId, String partnerId, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
     Partner partner = getPartner(partnerId);
     Product product = getProduct(productId);
@@ -249,14 +278,6 @@ public class Warehouse implements Serializable {
     addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
   }
 
-  public void registerBreakdownSale(String partnerId, String productId, int amount) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException, CoreUnavailableProductException{
-    Partner partner = getPartner(partnerId);
-    Product product = getProduct(productId);
-    if(!(product instanceof AggregateProduct))
-      return;
-    
-    
-  }
 
   //BATCHES
 
