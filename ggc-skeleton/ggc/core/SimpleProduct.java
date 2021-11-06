@@ -6,8 +6,8 @@ public class SimpleProduct extends Product{
     }
     
     @Override
-    boolean checkQuantity(int quantity, Partner partner){
-        return quantity;
+    public boolean checkQuantity(int quantity, Partner partner){
+        return true;
     }
 
     public String toString(){

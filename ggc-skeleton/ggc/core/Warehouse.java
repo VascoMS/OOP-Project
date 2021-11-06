@@ -42,20 +42,91 @@ public class Warehouse implements Serializable {
     _availableBalance = 0;
   }
 
+  //DATE
+
   public Date getDate(){
     return _date;
   }
 
+  public void advanceDate(int days) throws CoreInvalidDateException{
+    if(days < 0)
+      throw new CoreInvalidDateException(days);
+    _date.add(days);
+  }
+
+  //PRODUCTS
+
+  public List<Product> getProducts(){
+    List<Product> products = new ArrayList<>();
+    products.addAll(_products.values());
+    return products;
+  }
+
+  public List<Product> getSortedProducts(){
+    List<Product> products = getProducts();
+    products.sort(new ProductComparator());
+    return products;
+  }
+
+  public void addProduct(Product product) {
+    _products.put(product.getId(), product);
+  }
+
+  public Product getProduct(String id) throws CoreUnknownProductKeyException{
+    if(_products.containsKey(id))
+      return _products.get(id);
+    throw new CoreUnknownProductKeyException(id);
+  }
+
+  public boolean hasProduct(String id){
+    try {
+      getProduct(id);
+      return true;
+    } catch (CoreUnknownProductKeyException e) {
+      return false;
+    }
+  }
+
+  public List<Component> createComponents(List<Product> products, List<Integer> quantities){
+    List<Component> components = new ArrayList<>();
+    for(int i=0; i<quantities.size(); i++){
+      components.add(new Component(quantities.get(i), products.get(i)));
+    }
+    return components;
+  }
+
+
+  //PARTNERS
+
+  public List<Partner> getPartners(){
+    List<Partner> partners = new ArrayList<>();
+    partners.addAll(_partners.values());
+    return partners;
+  }
+
+  public List<Partner> getSortedPartners(){
+    List<Partner> partners = getPartners();
+    partners.sort(new PartnerComparator());
+    return partners;
+  }
+
+  public void addPartner(Partner partner) throws CoreDuplicatePartnerKeyException{
+    if(_partners.containsKey(partner.getId().toLowerCase()))
+      throw new CoreDuplicatePartnerKeyException(partner.getId());
+    _partners.put(partner.getId().toLowerCase(), partner);
+  }
+
+  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
+    if(_partners.containsKey(id.toLowerCase()))
+      return _partners.get(id.toLowerCase());
+    throw new CoreUnknownPartnerKeyException(id);
+      
+  }
+
+  //TRANSACTIONS
+
   public int getNextTransactionId(){
     return _nextTransactionId;
-  }
-
-  public double getAvailableBalance(){
-    return _availableBalance;
-  }
-
-  public double getAccountingBalance(){
-    return _accountingBalance;
   }
 
   public Transaction getTransaction(int id) throws CoreUnknownTransactionKeyException{
@@ -70,38 +141,49 @@ public class Warehouse implements Serializable {
     return transactions;
   }
 
-  public List<Product> getProducts(){
-    List<Product> products = new ArrayList<>();
-    products.addAll(_products.values());
-    return products;
+  public void payTransaction(int id)throws CoreUnknownTransactionKeyException{
+      Transaction transaction = getTransaction(id);
+      if(transaction.isPaid())
+        return;
+      if(!(transaction instanceof SaleByCredit))
+        return;
+      SaleByCredit sale = (SaleByCredit) transaction;
+      double payment = sale.calculatePayment(_date);
+      updateAccountingBalance(payment);
+      sale.getPartner().updatePayedSales(payment);
+      sale.getPartner().updatePoints(_date, sale);
   }
 
-  public List<Product> getSortedProducts(){
-    List<Product> products = getProducts();
-    products.sort(new ProductComparator());
-    return products;
-  }
-
-  public List<Partner> getPartners(){
-    List<Partner> partners = new ArrayList<>();
-    partners.addAll(_partners.values());
-    return partners;
-  }
-
-  public boolean hasProduct(String id){
+  //REGISTER OS PRODUTOS
+  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity) throws CoreUnknownPartnerKeyException{
+    Partner partner = getPartner(partnerId);
+    Product product;
     try {
-      getProduct(id);
-      return true;
+      product = getProduct(productId);
     } catch (CoreUnknownProductKeyException e) {
-      return false;
+      product = new SimpleProduct(productId);
+      addProduct(product);
     }
+    Acquisition transaction = new Acquisition(_nextTransactionId, _date, productPrice, quantity, product, partner);
+    _transactions.put(_nextTransactionId++, transaction);
+    partner.addAcquisition(transaction);
+    addBatch(new Batch(productPrice, quantity, partner, product));
   }
 
-  public List<Partner> getSortedPartners(){
-    List<Partner> partners = getPartners();
-    partners.sort(new PartnerComparator());
-    return partners;
+  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity, List<String> productsIDs, List<Integer> quantities, double alpha, int numberComponents) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
+    Partner partner = getPartner(partnerId);
+    List<Component> components = new ArrayList<>();
+    for(int i = 0;i < numberComponents; i++){
+      components.add(new Component(quantities.get(i), getProduct(productsIDs.get(i))));
+    }
+    addProduct(new AggregateProduct(productId, new Recipe(alpha, components)));
+    Acquisition transaction = new Acquisition(_nextTransactionId, _date, productPrice, quantity, _products.get(productId), partner);
+    _transactions.put(_nextTransactionId++, transaction);
+    partner.addAcquisition(transaction);
+    addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
   }
+
+  //BATCHES
 
   public List<Batch> getBatches(){
     return _batches;
@@ -132,77 +214,30 @@ public class Warehouse implements Serializable {
     return batchesProduct;
   }
 
-  public void advanceDate(int days) throws CoreInvalidDateException{
-    if(days < 0)
-      throw new CoreInvalidDateException(days);
-    _date.add(days);
-  }
-
-  public void addProduct(Product product) {
-    _products.put(product.getId(), product);
-  }
-
-  public Product getProduct(String id) throws CoreUnknownProductKeyException{
-    if(_products.containsKey(id))
-      return _products.get(id);
-    throw new CoreUnknownProductKeyException(id);
-  }
-
-  public List<Component> createComponents(List<Product> products, List<Integer> quantities){
-    List<Component> components = new ArrayList<>();
-    for(int i=0; i<quantities.size(); i++){
-      components.add(new Component(quantities.get(i), products.get(i)));
-    }
-    return components;
-  }
-
-  public void addPartner(Partner partner) throws CoreDuplicatePartnerKeyException{
-    if(_partners.containsKey(partner.getId().toLowerCase()))
-      throw new CoreDuplicatePartnerKeyException(partner.getId());
-    _partners.put(partner.getId().toLowerCase(), partner);
-  }
-
-  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
-    if(_partners.containsKey(id.toLowerCase()))
-      return _partners.get(id.toLowerCase());
-    throw new CoreUnknownPartnerKeyException(id);
-      
-  }
-//REGISTER OS PRODUTOS
-  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity) throws CoreUnknownPartnerKeyException{
-    Partner partner = getPartner(partnerId);
-    Product product;
-    try {
-      product = getProduct(productId);
-    } catch (CoreUnknownProductKeyException e) {
-      product = new SimpleProduct(productId);
-      addProduct(product);
-    }
-    Acquisition transaction = new Acquisition(_nextTransactionId, _date, productPrice, quantity, product, partner);
-    _transactions.put(_nextTransactionId++, transaction);
-    partner.addAcquisition(transaction);
-    addBatch(new Batch(productPrice, quantity, partner, product));
-  }
-
-  public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity, List<String> productsIDs, List<Integer> quantities, double alpha, int numberComponents) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
-    Partner partner = getPartner(partnerId);
-    List<Component> components = new ArrayList<>();
-    for(int i = 0;i < numberComponents; i++){
-      components.add(new Component(quantities.get(i), getProduct(productsIDs.get(i))));
-    }
-    addProduct(new AggregateProduct(productId, new Recipe(alpha, components)));
-    Acquisition transaction = new Acquisition(_nextTransactionId, _date, productPrice, quantity, _products.get(productId), partner);
-    _transactions.put(_nextTransactionId++, transaction);
-    partner.addAcquisition(transaction);
-    addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
-  }
-
-
   public void addBatch(Batch batch){
     _batches.add(batch);
     batch.getProduct().addBatch(batch);
     batch.getPartner().addBatch(batch);
   }
+
+  //BALANCE
+
+  public double getAvailableBalance(){
+    return _availableBalance;
+  }
+
+  public double getAccountingBalance(){
+    return _accountingBalance;
+  }
+
+  public void updateAvailableBalance(double payment){
+    _availableBalance += payment;
+  }
+
+  public void updateAccountingBalance(double payment){
+    _accountingBalance += payment;
+  }
+
 
   /**
    * @param txtfile filename to be loaded.

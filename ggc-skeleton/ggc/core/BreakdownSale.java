@@ -7,8 +7,14 @@ public class BreakdownSale extends Sale{
     }
 
     public boolean isPaid() {
-        return false;
-        
+        return true;
+    }
+
+    public double calculatePayment(Date date){
+        double payment=0;
+        //actual math
+        super.getPartner().updatePayedSales(payment);
+        return payment;
     }
 
 }

@@ -23,8 +23,19 @@ public class NormalStatus implements PartnerStatus, Serializable{
         return 0;
     }
 
-    @Override
+    public double computePoints(Date currentDate, Sale transaction, double points){
+        if(transaction instanceof BreakdownSale)
+            return 10*transaction.calculatePayment(currentDate);
 
+        Date deadline = ((SaleByCredit) transaction).getDeadline();
+
+        if(deadline.difference(currentDate) > 0)
+            return -points;
+            
+        return 10*transaction.calculatePayment(currentDate);
+    }
+
+    @Override
     public String toString(){
         return "NORMAL";
     }

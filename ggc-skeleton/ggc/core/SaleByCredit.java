@@ -10,10 +10,27 @@ public class SaleByCredit extends Sale{
         _amountPaid=0;
     }
     public boolean isPaid() {
-        return false;
-        
+        return _amountPaid != 0;   
     }
 
+    public Date getDeadline(){
+        return _deadline;
+    }
 
+    public double getAmountPaid(){
+        return _amountPaid;
+    }
+    @Override
+    public double calculatePayment(Date currentDate){
+        int period;
+        if(super.getProduct() instanceof SimpleProduct)
+            period=5;
+        else
+            period=3;
+        double discount = super.getPartner().computeDiscount(currentDate, _deadline , period);
+        double fine = super.getPartner().computeFine(currentDate, _deadline, period);
+        double payment = super.getBaseValue() + super.getBaseValue()*discount + super.getBaseValue()*fine;
+        return payment;
+     }
 
 }

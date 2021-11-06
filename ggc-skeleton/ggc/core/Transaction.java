@@ -12,7 +12,6 @@ public abstract class Transaction implements Serializable{
 
     public abstract boolean isPaid();
 
-
     public Transaction(int id, Date paymentDate, double baseValue, int quantity, Product product, Partner partner){
         _id = id;
         _paymentDate = paymentDate;
@@ -44,4 +43,5 @@ public abstract class Transaction implements Serializable{
     public Date getPaymentDate(){
         return _paymentDate;
     }
+
 }

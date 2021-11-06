@@ -5,4 +5,6 @@ public abstract class Sale extends Transaction{
         super(id, paymentDate, baseValue, quantity, product, partner);
 
     }
+
+    public abstract double calculatePayment(Date currentDate);
 }

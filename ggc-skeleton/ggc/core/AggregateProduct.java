@@ -13,7 +13,7 @@ public class AggregateProduct extends Product{
     }
 
     @Override
-    boolean checkQuantity(int quantity, Partner partner) {
+    public boolean checkQuantity(int quantity, Partner partner) {
         return true;
     }
 

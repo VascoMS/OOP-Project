@@ -90,6 +90,10 @@ public class WarehouseManager {
     return _warehouse.getTransaction(id);
   }
 
+  public void payTransaction(int id)throws CoreUnknownTransactionKeyException{
+    _warehouse.payTransaction(id);
+  }
+
   //BATCHES
 
   public List<Batch> getAllBatchesWarehouse(){
@@ -123,6 +127,14 @@ public class WarehouseManager {
 
   public double getAvailableBalance(){
     return _warehouse.getAvailableBalance();
+  }
+
+  public void updateAccountingBalance(double payment){
+    _warehouse.updateAccountingBalance(payment);
+  }
+
+  public void updateAvailableBalance(double payment){
+    _warehouse.updateAvailableBalance(payment);
   }
 
 
