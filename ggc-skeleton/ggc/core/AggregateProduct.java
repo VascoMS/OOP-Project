@@ -13,8 +13,8 @@ public class AggregateProduct extends Product{
     }
 
     @Override
-    boolean checkQuantity(int quantity, Partner partner) {
-        return true;
+    public boolean checkQuantity(int quantity, Partner partner) {
+        return quantity <= super.getTotalStock();
     }
 
     @Override

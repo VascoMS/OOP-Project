@@ -1,6 +1,7 @@
 package ggc.app.partners;
 
 import ggc.app.exception.UnknownPartnerKeyException;
+import ggc.core.Notification;
 import ggc.core.WarehouseManager;
 import ggc.core.exception.CoreUnknownPartnerKeyException;
 import pt.tecnico.uilib.menus.Command;
@@ -20,11 +21,17 @@ class DoShowPartner extends Command<WarehouseManager> {
   public void execute() throws CommandException {
       String id = stringField("partnerId");
       try {
-        _display.popup(_receiver.getPartner(id));
+        _display.addLine(_receiver.getPartner(id));
       } catch (CoreUnknownPartnerKeyException e) {
         throw new UnknownPartnerKeyException(id);
       }
-      //show notifications
+      try{
+      for(Notification n : _receiver.getPartner(id).getNotifications())
+        _display.addLine(n);
+      _display.display();
+      } catch(CoreUnknownPartnerKeyException ex){
+        throw new UnknownPartnerKeyException(id);
+      }
   }
 
 }

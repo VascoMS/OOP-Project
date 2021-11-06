@@ -19,8 +19,8 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
 
   public DoRegisterAcquisitionTransaction(WarehouseManager receiver) {
     super(Label.REGISTER_ACQUISITION_TRANSACTION, receiver);
-    addIntegerField("partnerId", Message.requestPartnerKey());
-    addIntegerField("productId", Message.requestProductKey());
+    addStringField("partnerId", Message.requestPartnerKey());
+    addStringField("productId", Message.requestProductKey());
     addIntegerField("price", Message.requestPrice());
     addIntegerField("amount", Message.requestAmount());
   }

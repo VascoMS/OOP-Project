@@ -90,6 +90,18 @@ public class WarehouseManager {
     return _warehouse.getTransaction(id);
   }
 
+  public void registerSaleByCredit(String productId, String partnerId, int deadline, int amount)throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
+    _warehouse.registerSaleByCredit(productId, partnerId, deadline, amount);
+  }
+
+  public void registerBreakdownSale(String partnerId, String productId, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
+    _warehouse.registerBreakdownSale(partnerId, productId, amount);
+  }
+
+  public void payTransaction(int id)throws CoreUnknownTransactionKeyException{
+    _warehouse.payTransaction(id);
+  }
+
   //BATCHES
 
   public List<Batch> getAllBatchesWarehouse(){
@@ -123,6 +135,14 @@ public class WarehouseManager {
 
   public double getAvailableBalance(){
     return _warehouse.getAvailableBalance();
+  }
+
+  public void updateAccountingBalance(double payment){
+    _warehouse.updateAccountingBalance(payment);
+  }
+
+  public void updateAvailableBalance(double payment){
+    _warehouse.updateAvailableBalance(payment);
   }
 
 

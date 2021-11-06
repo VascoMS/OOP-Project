@@ -2,6 +2,8 @@ package ggc.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,13 +16,20 @@ import java.util.Objects;
  */
 public abstract class Product implements Serializable{
     /*Guarda o preço máximo do produto*/
+
     private double _maxPrice;
+
     /*Guarda o identificador do produto*/
+
     private String _id;
+
     /*Guarda os lotes onde o produto está contido*/
+
     private List<Batch> _batches;
+
     /*Guarda o stock total de um produto no armazém */
-    private long _totalStock;
+
+    private int _totalStock;
 
     /** 
      * Construtor da classe, define o id do produto.
@@ -56,8 +65,23 @@ public abstract class Product implements Serializable{
      */
     public void addBatch(Batch batch) {
         _batches.add(batch);
-        _totalStock += batch.getQuantity();
+        updateTotalStock();
         updateMaxPrice();
+    }
+
+    public void removeBatch(Batch batch){
+        _batches.remove(batch);
+        updateTotalStock();
+    }
+
+    public void updateTotalStock(){
+        Iterator<Batch> iter = _batches.iterator();
+        int totalStock = 0;
+        while(iter.hasNext()){
+            Batch batch = iter.next();
+            totalStock += batch.getQuantity();
+        }
+        _totalStock = totalStock;
     }
 
     /**
@@ -73,21 +97,21 @@ public abstract class Product implements Serializable{
      * @return lista de lotes do produto
      */
     public List<Batch> getBatches(){
-        return _batches;
+        return Collections.unmodifiableList(_batches);
     }
 
     /**
      * Devolve o stock total do produto
      * @return stock total do produto
      */
-    public long getTotalStock(){
+    public int getTotalStock(){
         return _totalStock;
     }
 
     public List<Batch> getBatchesSortedByPrice(){
         List<Batch> sortedBatches = new ArrayList<>(_batches);
         sortedBatches.sort(new BatchPriceComparator());
-        return sortedBatches;
+        return Collections.unmodifiableList(sortedBatches);
     }
 
     /** substitui o metodo para comparar produtos utilizando o identificador unico
@@ -108,7 +132,5 @@ public abstract class Product implements Serializable{
     }
 
     abstract boolean checkQuantity(int quantity, Partner partner);
-
-
-
+    
 }

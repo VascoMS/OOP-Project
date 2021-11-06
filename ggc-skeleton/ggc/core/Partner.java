@@ -73,15 +73,56 @@ public class Partner implements Serializable{
         return _totalAcquisitionValue;
     }
 
+    public double computeFine(Date currentDate, Date deadline, int period){
+        return _status.computeFine(currentDate, deadline, period);
+    }
+
+    public double computeDiscount(Date currentDate, Date deadline, int period){
+        return _status.computeDiscount(currentDate, deadline, period);
+    }
+
+    public double computePoints(Date currentDate, Sale transaction, double points){
+        return _status.computePoints(currentDate, transaction, points);
+    }
+    
+    public void updatePoints(Date currentDate, Sale transaction){
+        _points += computePoints(currentDate, transaction, _points);
+        updateStatus();
+    }
+
+    public void updateStatus(){
+        if(0 < _points && _points <= 2000)
+            _status = new NormalStatus();
+        else if(2000 < _points && _points <= 25000)
+            _status = new SelectionStatus();
+        else if(25000 < _points)
+            _status = new EliteStatus();
+    }
+    
+
+
     public void addAcquisition(Acquisition transaction){
         _acquisitions.add(transaction);
         _totalAcquisitionValue+= transaction.getBaseValue();
+    }
+
+    public void addSale(Sale transaction,Date date){
+        _sales.add(transaction);
+        _totalSalesValue += transaction.calculatePayment(date);
     }
 
     public void addBatch(Batch batch){
         _batches.add(batch);
     }
     
+    public void removeBatch(Batch batch){
+        _batches.remove(batch);
+    }
+    
+    public void updatePayedSales(double valuePayed){
+        _totalPayedSalesValue = valuePayed;
+    }
+
     public String toString(){
         return _id + "|" +_name +"|"+ _address +"|"+ _status +"|"+(long)_points+"|"+(long)_totalAcquisitionValue+"|"+(long)_totalSalesValue+"|"+(long)_totalPayedSalesValue;
     }

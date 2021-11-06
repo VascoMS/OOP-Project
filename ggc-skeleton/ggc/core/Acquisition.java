@@ -2,8 +2,8 @@ package ggc.core;
 
 public class Acquisition extends Transaction{
    
-    Acquisition(int id, Date paymentDate, double baseValue, int quantity, Product product, Partner partner){
-        super(id, paymentDate, baseValue, quantity, product, partner);
+    Acquisition(int id, double baseValue, int quantity, Product product, Partner partner){
+        super(id, baseValue, quantity, product, partner);
     }
 
     public boolean isPaid(){

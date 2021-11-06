@@ -52,6 +52,10 @@ public Partner getPartner(){
     return _partner;
 }
 
+public void removeAmount(int amount){
+    _quantity -= amount;
+}
+
 /** obter produto
  * @return Product produto
  */

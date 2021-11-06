@@ -25,8 +25,23 @@ public class SelectionStatus implements PartnerStatus, Serializable{
         return 0;
     }
 
-    @Override
+    public double computePoints(Date currentDate, Sale transaction, double points){
+        if(transaction instanceof BreakdownSale)
+            return 10*transaction.calculatePayment(currentDate);
 
+        Date deadline = ((SaleByCredit) transaction).getDeadline();
+
+        if(deadline.difference(currentDate) <= 0)
+            return 10*transaction.calculatePayment(currentDate);
+
+        if(deadline.difference(currentDate) > 2)
+            return -0.90*points;
+
+        return 0; // nao altera
+
+    }
+
+    @Override
     public String toString(){
         return "SELECTION";
     }
