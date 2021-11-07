@@ -106,9 +106,16 @@ public class Partner implements Serializable{
         _totalAcquisitionValue+= transaction.getBaseValue();
     }
 
-    public void addSale(Sale transaction,Date date){
+    public void addSaleByCredit(SaleByCredit transaction,Date date){
         _sales.add(transaction);
         _totalSalesValue += transaction.calculatePayment(date);
+    }
+
+    public void addBreakdownSale(BreakdownSale transaction,Date date){
+        double payment = transaction.calculatePayment(date);
+        _sales.add(transaction);
+        _totalSalesValue += payment;
+        _totalPayedSalesValue += payment;
     }
 
     public void addBatch(Batch batch){

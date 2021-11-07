@@ -5,10 +5,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ggc.app.exception.UnavailableProductException;
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
 import ggc.core.exception.CoreInvalidDateException;
@@ -173,11 +173,11 @@ public class Warehouse implements Serializable {
     double aggregateProductValue = calculateBaseValueAndUpdateBatches(product, amount, batches);
     double componentsValue=0;
     List<Component> components = aggregateProduct.getRecipe().getComponents();
-    for(int i=0; i < components.size(); i++){
-      double price = components.get(i).getProduct().getLowestPrice();
-      int quantity = components.get(i).getQuantity();
+    for(Component component : components){
+      double price = component.getProduct().getLowestPrice();
+      int quantity = component.getQuantity();
       componentsValue += price*quantity;
-      addBatch(new Batch(price, quantity, partner, product));
+      addBatch(new Batch(price, quantity*amount, partner, product));
     }
     //cada produto derivado da este valor
     componentsValue *= amount;
@@ -186,7 +186,7 @@ public class Warehouse implements Serializable {
     updateAvailableBalance(transactionCost);
     Transaction transaction = new BreakdownSale(_nextTransactionId, transactionCost, amount, product, partner);
     _transactions.put(_nextTransactionId++, transaction);
-    partner.addSale((Sale)transaction, _date);
+    partner.addBreakdownSale((BreakdownSale)transaction, _date);
     
   }
 
@@ -209,7 +209,7 @@ public class Warehouse implements Serializable {
     updateAccountingBalance(baseValue);
     Transaction transaction = new SaleByCredit(_nextTransactionId, baseValue, amount, product, partner, deadline);
     _transactions.put(_nextTransactionId++, transaction);
-    partner.addSale((Sale)transaction, _date);
+    partner.addSaleByCredit((SaleByCredit)transaction, _date);
   }
 
   public void registerSaleByCreditAggregate(Product product, Partner partner, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
@@ -220,13 +220,14 @@ public class Warehouse implements Serializable {
     updateAccountingBalance(baseValue);
     Transaction transaction = new SaleByCredit(_nextTransactionId, baseValue, amount, product, partner, deadline);
     _transactions.put(_nextTransactionId++, transaction);
-    partner.addSale((Sale)transaction, _date);
+    partner.addSaleByCredit((SaleByCredit)transaction, _date);
   }
 
   public double calculateBaseValueAndUpdateBatches(Product product, int amount, List<Batch> batches){
     double baseValue=0;
     int i=0;
     Batch batch;
+    Iterator<Batch> iter = _batches.iterator();
     while(amount != 0 && i < batches.size()){
       batch = batches.get(i);
       if(batch.getQuantity() < amount){
