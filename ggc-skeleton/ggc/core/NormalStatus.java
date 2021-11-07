@@ -3,6 +3,17 @@ package ggc.core;
 import java.io.Serializable;
 
 public class NormalStatus implements PartnerStatus, Serializable{
+    private static NormalStatus _status;
+
+    private NormalStatus(){}
+
+    public static NormalStatus getInstance()
+    {
+        if (_status == null)
+            _status = new NormalStatus();
+ 
+        return _status;
+    }
     
     public double computeFine(Date currentDate, Date deadline, int period){
         /*if(currentDate.difference(deadline) >= period)

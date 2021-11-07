@@ -54,7 +54,7 @@ public class Warehouse implements Serializable {
     if(days < 0)
       throw new CoreInvalidDateException(days);
     _date.add(days);
-    //updatar as transacoes e saldo accounting
+    updateAccountingBalance();
   }
 
   //PRODUCTS
@@ -156,7 +156,10 @@ public class Warehouse implements Serializable {
         return;
       SaleByCredit sale = (SaleByCredit) transaction;
       double payment = sale.calculatePayment(_date);
+      sale.setAmountPaid(payment);
+      sale.setPaymentDate(_date);
       updateAvailableBalance(payment);
+      updateAccountingBalance();
       sale.getPartner().updatePayedSales(payment);
       sale.getPartner().updatePoints(_date, sale);
   }
@@ -170,7 +173,7 @@ public class Warehouse implements Serializable {
       return;
     AggregateProduct aggregateProduct = (AggregateProduct) product;
     List<Batch> batches = product.getBatches();
-    double aggregateProductValue = calculateBaseValueAndUpdateBatches(product, amount, batches);
+    double aggregateProductValue = calculateBaseValueAndUpdateBatches(product, partner, amount, batches);
     double componentsValue=0;
     List<Component> components = aggregateProduct.getRecipe().getComponents();
     for(Component component : components){
@@ -182,11 +185,13 @@ public class Warehouse implements Serializable {
     //cada produto derivado da este valor
     componentsValue *= amount;
     double transactionCost = Math.abs(aggregateProductValue - componentsValue);
-    updateAccountingBalance(transactionCost);
-    updateAvailableBalance(transactionCost);
+    // if(transactionCost < 0) transactionCost = 0;
     Transaction transaction = new BreakdownSale(_nextTransactionId, transactionCost, amount, product, partner);
+    transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addBreakdownSale((BreakdownSale)transaction, _date);
+    updateAccountingBalance();
+    updateAvailableBalance(transactionCost);
     
   }
 
@@ -205,35 +210,37 @@ public class Warehouse implements Serializable {
     if(!product.checkQuantity(amount, partner))
       throw new CoreUnavailableProductException(product.getId(), product.getTotalStock());
     List<Batch> batches = product.getBatchesSortedByPrice();
-    double baseValue=calculateBaseValueAndUpdateBatches(product, amount, batches);
-    updateAccountingBalance(baseValue);
+    double baseValue=calculateBaseValueAndUpdateBatches(product, partner, amount, batches);
     Transaction transaction = new SaleByCredit(_nextTransactionId, baseValue, amount, product, partner, deadline);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addSaleByCredit((SaleByCredit)transaction, _date);
+    updateAccountingBalance();
   }
 
   public void registerSaleByCreditAggregate(Product product, Partner partner, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
     if(!product.checkQuantity(amount, partner))
       aggregateProduct(product.getId(), amount);
     List<Batch> batches = product.getBatchesSortedByPrice();
-    double baseValue=calculateBaseValueAndUpdateBatches(product, amount, batches);
-    updateAccountingBalance(baseValue);
+    double baseValue=calculateBaseValueAndUpdateBatches(product, partner, amount, batches);
     Transaction transaction = new SaleByCredit(_nextTransactionId, baseValue, amount, product, partner, deadline);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addSaleByCredit((SaleByCredit)transaction, _date);
+    updateAccountingBalance();
   }
 
-  public double calculateBaseValueAndUpdateBatches(Product product, int amount, List<Batch> batches){
+  public double calculateBaseValueAndUpdateBatches(Product product, Partner partner, int amount, List<Batch> batches){
     double baseValue=0;
     int i=0;
     Batch batch;
     Iterator<Batch> iter = _batches.iterator();
-    while(amount != 0 && i < batches.size()){
-      batch = batches.get(i);
+    while(amount != 0 && iter.hasNext()){
+      batch = iter.next();
       if(batch.getQuantity() < amount){
         baseValue += batch.getQuantity()*batch.getPrice();
         amount -= batch.getQuantity();
-        removeBatch(batch);
+        iter.remove();
+        product.removeBatch(batch);
+        partner.removeBatch(batch);
       }
       if(batch.getQuantity() > amount){
         baseValue += amount*batch.getPrice();
@@ -255,12 +262,13 @@ public class Warehouse implements Serializable {
       product = new SimpleProduct(productId);
       addProduct(product);
     }
-    updateAccountingBalance(-baseValue);
-    updateAvailableBalance(-baseValue);
     Transaction transaction = new Acquisition(_nextTransactionId, baseValue, quantity, product, partner);
+    transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addAcquisition((Acquisition) transaction);
     addBatch(new Batch(productPrice, quantity, partner, product));
+    updateAccountingBalance();
+    updateAvailableBalance(-baseValue);
   }
 
   public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity, List<String> productsIDs, List<Integer> quantities, double alpha, int numberComponents) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
@@ -271,12 +279,13 @@ public class Warehouse implements Serializable {
       components.add(new Component(quantities.get(i), getProduct(productsIDs.get(i))));
     }
     addProduct(new AggregateProduct(productId, new Recipe(alpha, components)));
-    updateAccountingBalance(-baseValue);
-    updateAvailableBalance(-baseValue);
     Transaction transaction = new Acquisition(_nextTransactionId, baseValue, quantity, _products.get(productId), partner);
+    transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addAcquisition((Acquisition) transaction);
     addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
+    updateAccountingBalance();
+    updateAvailableBalance(-baseValue);
   }
 
 
@@ -316,12 +325,13 @@ public class Warehouse implements Serializable {
     batch.getProduct().addBatch(batch);
     batch.getPartner().addBatch(batch);
   }
-
+/*
   public void removeBatch(Batch batch){
     _batches.remove(batch);
     batch.getProduct().removeBatch(batch);
     batch.getPartner().removeBatch(batch);
   }
+  */
 
   //BALANCE
 
@@ -337,8 +347,21 @@ public class Warehouse implements Serializable {
     _availableBalance += payment;
   }
 
-  public void updateAccountingBalance(double payment){
-    _accountingBalance += payment;
+  public void updateAccountingBalance(){
+    _accountingBalance=0;
+    List<Transaction> transactions = new ArrayList<>(_transactions.values());
+    for(Transaction transaction : transactions){
+      if(transaction instanceof Acquisition){
+        Acquisition acquisition = (Acquisition) transaction;
+        double payment = acquisition.getBaseValue();
+        _accountingBalance -= payment;
+      }
+      else{
+        Sale sale = (Sale) transaction;
+        double payment = sale.calculatePayment(sale.getPaymentDate());
+        _accountingBalance += payment;
+      }
+    }
   }
 
 

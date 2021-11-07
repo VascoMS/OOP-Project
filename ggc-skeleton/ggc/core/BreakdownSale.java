@@ -4,6 +4,7 @@ public class BreakdownSale extends Sale{
 
     BreakdownSale(int id, double baseValue, int quantity, Product product, Partner partner){
         super(id, baseValue, quantity, product, partner);
+        super.setAmountPaid(baseValue);
     }
 
     public boolean isPaid() {

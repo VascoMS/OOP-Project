@@ -22,7 +22,7 @@ public class Partner implements Serializable{
         _address = address;
         _id = id;
         _points = _totalSalesValue = _totalPayedSalesValue = _totalAcquisitionValue = 0;
-        _status = new NormalStatus();
+        _status = NormalStatus.getInstance();
         _sales = new ArrayList<>();
         _batches = new ArrayList<>();
         _acquisitions = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Partner implements Serializable{
 
     public void updateStatus(){
         if(0 < _points && _points <= 2000)
-            _status = new NormalStatus();
+            _status = NormalStatus.getInstance();
         else if(2000 < _points && _points <= 25000)
             _status = new SelectionStatus();
         else if(25000 < _points)

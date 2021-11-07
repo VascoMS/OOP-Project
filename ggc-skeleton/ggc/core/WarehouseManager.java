@@ -137,8 +137,8 @@ public class WarehouseManager {
     return _warehouse.getAvailableBalance();
   }
 
-  public void updateAccountingBalance(double payment){
-    _warehouse.updateAccountingBalance(payment);
+  public void updateAccountingBalance(){
+    _warehouse.updateAccountingBalance();
   }
 
   public void updateAvailableBalance(double payment){
