@@ -1,9 +1,11 @@
 package ggc.core;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
 
-public class Partner implements Serializable{
+public class Partner implements Serializable, NotificationObserver{
     private String _name;
     private String _address;
     private String _id;
@@ -73,6 +75,10 @@ public class Partner implements Serializable{
         return _totalAcquisitionValue;
     }
 
+    public void updateNotifications(Notification notification){
+        _notifications.add(notification);
+    }
+
     public double computeFine(Date currentDate, Date deadline, int period){
         return _status.computeFine(currentDate, deadline, period);
     }
@@ -94,9 +100,9 @@ public class Partner implements Serializable{
         if(0 < _points && _points <= 2000)
             _status = NormalStatus.getInstance();
         else if(2000 < _points && _points <= 25000)
-            _status = new SelectionStatus();
+            _status = SelectionStatus.getInstance();
         else if(25000 < _points)
-            _status = new EliteStatus();
+            _status = EliteStatus.getInstance();
     }
     
 
@@ -112,7 +118,7 @@ public class Partner implements Serializable{
     }
 
     public void addBreakdownSale(BreakdownSale transaction,Date date){
-        double payment = transaction.calculatePayment(date);
+        double payment = transaction.getAmountPaid();
         _sales.add(transaction);
         _totalSalesValue += payment;
         _totalPayedSalesValue += payment;

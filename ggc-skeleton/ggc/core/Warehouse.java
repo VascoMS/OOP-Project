@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.lang.model.util.ElementScanner14;
+
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
 import ggc.core.exception.CoreInvalidDateException;
@@ -155,7 +157,8 @@ public class Warehouse implements Serializable {
       if(!(transaction instanceof SaleByCredit))
         return;
       SaleByCredit sale = (SaleByCredit) transaction;
-      double payment = sale.calculatePayment(_date);
+      double payment = sale.getAmountOwed();
+      sale.setAmountOwed(0);
       sale.setAmountPaid(payment);
       sale.setPaymentDate(_date);
       updateAvailableBalance(payment);
@@ -184,14 +187,18 @@ public class Warehouse implements Serializable {
     }
     //cada produto derivado da este valor
     componentsValue *= amount;
-    double transactionCost = Math.abs(aggregateProductValue - componentsValue);
-    // if(transactionCost < 0) transactionCost = 0;
-    Transaction transaction = new BreakdownSale(_nextTransactionId, transactionCost, amount, product, partner);
+    double realValue = aggregateProductValue - componentsValue;
+    double payedValue;
+    if(realValue < 0)
+      payedValue = 0;
+    else
+      payedValue=realValue;
+    Transaction transaction = new BreakdownSale(_nextTransactionId, realValue, amount, product, partner, payedValue);
     transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addBreakdownSale((BreakdownSale)transaction, _date);
     updateAccountingBalance();
-    updateAvailableBalance(transactionCost);
+    updateAvailableBalance(payedValue);
     
   }
 
@@ -325,13 +332,7 @@ public class Warehouse implements Serializable {
     batch.getProduct().addBatch(batch);
     batch.getPartner().addBatch(batch);
   }
-/*
-  public void removeBatch(Batch batch){
-    _batches.remove(batch);
-    batch.getProduct().removeBatch(batch);
-    batch.getPartner().removeBatch(batch);
-  }
-  */
+
 
   //BALANCE
 
@@ -358,8 +359,11 @@ public class Warehouse implements Serializable {
       }
       else{
         Sale sale = (Sale) transaction;
-        double payment = sale.calculatePayment(sale.getPaymentDate());
-        _accountingBalance += payment;
+        if(sale.isPaid())
+          _accountingBalance += sale.getAmountPaid();
+        else{
+          _accountingBalance += ((SaleByCredit)sale).getAmountOwed();
+        } 
       }
     }
   }

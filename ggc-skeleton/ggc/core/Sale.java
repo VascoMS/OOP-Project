@@ -14,6 +14,4 @@ public abstract class Sale extends Transaction{
     public void setAmountPaid(double payment){
         _amountPaid=payment;
     }
-
-    public abstract double calculatePayment(Date currentDate);
 }
