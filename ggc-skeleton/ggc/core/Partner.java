@@ -1,9 +1,9 @@
 package ggc.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.ArrayList;
 
 public class Partner implements Serializable, NotificationObserver{
     private String _name;
@@ -87,24 +87,17 @@ public class Partner implements Serializable, NotificationObserver{
         return _status.computeDiscount(currentDate, deadline, period);
     }
 
-    public double computePoints(Date currentDate, Sale transaction, double points){
-        return _status.computePoints(currentDate, transaction, points);
+    public double computePoints(Date currentDate, Sale transaction){
+        return _status.computePoints(currentDate, transaction, this);
     }
     
     public void updatePoints(Date currentDate, Sale transaction){
-        _points += computePoints(currentDate, transaction, _points);
-        updateStatus();
+        _points += computePoints(currentDate, transaction);
     }
 
-    public void updateStatus(){
-        if(0 < _points && _points <= 2000)
-            _status = NormalStatus.getInstance();
-        else if(2000 < _points && _points <= 25000)
-            _status = SelectionStatus.getInstance();
-        else if(25000 < _points)
-            _status = EliteStatus.getInstance();
+    public void setStatus(PartnerStatus newStatus){
+        _status = newStatus;
     }
-    
 
 
     public void addAcquisition(Acquisition transaction){
@@ -114,7 +107,7 @@ public class Partner implements Serializable, NotificationObserver{
 
     public void addSaleByCredit(SaleByCredit transaction,Date date){
         _sales.add(transaction);
-        _totalSalesValue += transaction.calculatePayment(date);
+        _totalSalesValue += transaction.getBaseValue();
     }
 
     public void addBreakdownSale(BreakdownSale transaction,Date date){
@@ -122,6 +115,7 @@ public class Partner implements Serializable, NotificationObserver{
         _sales.add(transaction);
         _totalSalesValue += payment;
         _totalPayedSalesValue += payment;
+        updatePoints(date, transaction);
     }
 
     public void addBatch(Batch batch){
@@ -133,11 +127,12 @@ public class Partner implements Serializable, NotificationObserver{
     }
     
     public void updatePayedSales(double valuePayed){
-        _totalPayedSalesValue = valuePayed;
+        _totalPayedSalesValue += valuePayed;
     }
 
     public String toString(){
-        return _id + "|" +_name +"|"+ _address +"|"+ _status +"|"+(long)_points+"|"+(long)_totalAcquisitionValue+"|"+(long)_totalSalesValue+"|"+(long)_totalPayedSalesValue;
+        return _id + "|" +_name +"|"+ _address +"|"+ _status +"|"+Math.round(_points)+"|"+Math.round(_totalAcquisitionValue)+"|"
+        +Math.round(_totalSalesValue)+"|"+Math.round(_totalPayedSalesValue);
     }
 
     @Override

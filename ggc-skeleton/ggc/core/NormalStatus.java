@@ -34,16 +34,14 @@ public class NormalStatus implements PartnerStatus, Serializable{
         return 0;
     }
 
-    public double computePoints(Date currentDate, Sale transaction, double points){
-        if(transaction instanceof BreakdownSale)
-            return 10*((BreakdownSale) transaction).getAmountPaid();
+    public double computePoints(Date currentDate, Sale transaction, Partner partner){
+        if(transaction.getDeadline().difference(currentDate) <= 0)
+            return 10*transaction.getAmountPaid();
 
-        Date deadline = ((SaleByCredit) transaction).getDeadline();
-
-        if(deadline.difference(currentDate) > 0)
-            return -points;
+        if(transaction.getDeadline().difference(currentDate) > 0)
+            return -partner.getPoints();
             
-        return 10*((SaleByCredit) transaction).getAmountOwed();
+        return 10*transaction.getAmountPaid();
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Recipe implements Serializable{
 
     @Override
     public String toString(){
-        String res= "";
+        String res = "";
         for(Component c: _components){
             if("".compareTo(res)!=0)
                 res += "#";

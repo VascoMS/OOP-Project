@@ -65,7 +65,7 @@ public class WarehouseManager {
     _warehouse.addPartner(newPartner);
   }
 
-  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
+  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException {
     return _warehouse.getPartner(id);
   }
 
@@ -75,6 +75,14 @@ public class WarehouseManager {
 
   public List<Partner> getAllPartnersWarehouse(){
     return _warehouse.getPartners();
+  }
+
+  public String getPartnerAcquisitions(String partnerId) throws CoreUnknownPartnerKeyException {
+    return _warehouse.getPartnerAcquisitions(partnerId);
+  }
+
+  public String getPartnerSales(String partnerId) throws CoreUnknownPartnerKeyException {
+    return _warehouse.getPartnerSales(partnerId);
   }
 
   //TRANSACTIONS
@@ -90,8 +98,8 @@ public class WarehouseManager {
     return _warehouse.getTransaction(id);
   }
 
-  public void registerSaleByCredit(String productId, String partnerId, int deadline, int amount)throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
-    _warehouse.registerSaleByCredit(productId, partnerId, deadline, amount);
+  public void registerSaleByCredit(String partnerId, String productId, int deadline, int amount)throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
+    _warehouse.registerSaleByCredit(partnerId, productId, deadline, amount);
   }
 
   public void registerBreakdownSale(String partnerId, String productId, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
@@ -100,6 +108,14 @@ public class WarehouseManager {
 
   public void payTransaction(int id)throws CoreUnknownTransactionKeyException{
     _warehouse.payTransaction(id);
+  }
+
+  public String getPayedSalesByPartner(String partnerId) throws CoreUnknownPartnerKeyException{
+    return _warehouse.getPayedSalesByPartner(partnerId);
+  }
+
+  public String showTransaction(int id) throws CoreUnknownTransactionKeyException{
+    return _warehouse.showTransaction(id);
   }
 
   //BATCHES
@@ -124,6 +140,10 @@ public class WarehouseManager {
   public List<Batch> getBatchesProduct(String productId) throws CoreUnknownProductKeyException{
     Product product = _warehouse.getProduct(productId);
     return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
+  }
+
+  public List<Batch> getBatchesProductUnderPrice(int price){
+    return _warehouse.getBatchesProductUnderPrice(price);
   }
   
 
@@ -193,7 +213,7 @@ public class WarehouseManager {
   public void importFile(String textfile) throws ImportFileException{
     try {
       _warehouse.importFile(textfile, this);
-    } catch (IOException | BadEntryException | CoreDuplicatePartnerKeyException | CoreUnknownPartnerKeyException | CoreUnknownProductKeyException /* FIXME maybe other exceptions */ e) {
+    } catch (IOException | BadEntryException | CoreDuplicatePartnerKeyException | CoreUnknownPartnerKeyException | CoreUnknownProductKeyException e) {
       throw new ImportFileException(textfile, e);
     }
   }

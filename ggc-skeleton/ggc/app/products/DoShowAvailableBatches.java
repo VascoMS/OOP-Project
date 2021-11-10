@@ -19,8 +19,8 @@ class DoShowAvailableBatches extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     List<Batch> batches = _receiver.getBatchesSorted();
-    for(Batch b: batches){
-      _display.addLine(b.toString());
+    for(Batch batch: batches){
+      _display.addLine(batch.toString());
     }
     _display.display();
   }

@@ -7,8 +7,7 @@ public class SelectionStatus implements PartnerStatus, Serializable{
 
     private SelectionStatus(){}
 
-    public static SelectionStatus getInstance()
-    {
+    public static SelectionStatus getInstance() {
         if (_status == null)
             _status = new SelectionStatus();
  
@@ -36,17 +35,14 @@ public class SelectionStatus implements PartnerStatus, Serializable{
         return 0;
     }
 
-    public double computePoints(Date currentDate, Sale transaction, double points){
-        if(transaction instanceof BreakdownSale)
-            return 10*((BreakdownSale)transaction).getAmountPaid();
+    public double computePoints(Date currentDate, Sale transaction, Partner partner){
+        if(transaction.getDeadline().difference(currentDate) <= 0)
+            return 10*transaction.getAmountPaid();
 
-        Date deadline = ((SaleByCredit) transaction).getDeadline();
-
-        if(deadline.difference(currentDate) <= 0)
-            return 10*((SaleByCredit) transaction).getAmountOwed();
-
-        if(deadline.difference(currentDate) > 2)
-            return -0.90*points;
+        if(transaction.getDeadline().difference(currentDate) > 15){
+            partner.setStatus(NormalStatus.getInstance());
+            return -0.9*partner.getPoints();
+        }
 
         return 0; // nao altera
 

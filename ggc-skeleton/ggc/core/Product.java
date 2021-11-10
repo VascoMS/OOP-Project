@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import ggc.core.exception.CoreUnavailableProductException;
+
  /**
  * Representa um produto 
  * Um produto é uma das entidades guardadas no armazém,é caracterizado por 
@@ -31,6 +33,8 @@ public abstract class Product implements Serializable{
 
     private int _totalStock;
 
+    private int _periodN;
+
     /** 
      * Construtor da classe, define o id do produto.
      * @param id valor de input que define o id do produto.
@@ -47,6 +51,14 @@ public abstract class Product implements Serializable{
      */
     public double getMaxPrice(){
         return _maxPrice;
+    }
+
+    public int getPeriodN(){
+        return _periodN;
+    }
+
+    public void setPeriodN(int periodN){
+        _periodN = periodN;
     }
 
     /**
@@ -133,7 +145,7 @@ public abstract class Product implements Serializable{
     public List<Batch> getBatchesSortedByPrice(){
         List<Batch> sortedBatches = new ArrayList<>(_batches);
         sortedBatches.sort(new BatchPriceComparator());
-        return Collections.unmodifiableList(sortedBatches);
+        return sortedBatches;
     }
 
     /** substitui o metodo para comparar produtos utilizando o identificador unico
@@ -154,5 +166,6 @@ public abstract class Product implements Serializable{
     }
 
     abstract boolean checkQuantity(int quantity, Partner partner);
+    abstract void aggregateProduct(String productId, int quantity) throws CoreUnavailableProductException;
     
 }

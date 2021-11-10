@@ -38,7 +38,7 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
     int amount = integerField("amount");
 
     try {
-      _receiver.registerSaleByCredit(productId, partnerId, deadline, amount);
+      _receiver.registerSaleByCredit(partnerId, productId, deadline, amount);
     } catch (CoreUnknownPartnerKeyException pa) {
       throw new UnknownPartnerKeyException(partnerId);
     } catch(CoreUnknownProductKeyException pr){

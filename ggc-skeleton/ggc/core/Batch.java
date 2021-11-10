@@ -67,7 +67,7 @@ public Product getProduct(){
  */
 @Override
 public String toString(){
-    return ""+_product.getId()+"|"+_partner.getId()+"|"+(int)_price+"|"+_quantity;
+    return ""+_product.getId()+"|"+_partner.getId()+"|"+Math.round(_price)+"|"+_quantity;
 }
 
 /** cria uma copia de um lote

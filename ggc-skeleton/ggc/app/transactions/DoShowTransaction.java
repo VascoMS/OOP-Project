@@ -21,8 +21,7 @@ public class DoShowTransaction extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     try{
-    Transaction transaction = _receiver.getTransaction(integerField("id"));
-    _display.popup(transaction);
+    _display.popup(_receiver.showTransaction(integerField("id")));
     } catch(CoreUnknownTransactionKeyException e){
       throw new UnknownTransactionKeyException(integerField("id"));
     }

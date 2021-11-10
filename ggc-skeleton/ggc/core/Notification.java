@@ -1,12 +1,12 @@
 package ggc.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class Notification implements Serializable{
-    List<NotificationObserver> _observers = new ArrayList<>();
+    Set<NotificationObserver> _observers = new HashSet<>();
     String _productId;
     double _productPrice;
     TypeNotification _type;

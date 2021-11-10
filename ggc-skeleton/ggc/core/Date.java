@@ -29,6 +29,11 @@ public class Date implements Serializable{
         return Objects.hash(_days);
     }
 
+    @Override
+    public String toString(){
+        return "" + _days;
+    }
+
     }
 
 

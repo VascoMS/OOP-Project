@@ -21,7 +21,7 @@ public class Component implements Serializable{
 
     @Override
     public String toString(){
-		return ""+_product+":"+_quantity; 
+		return ""+_product.getId()+":"+_quantity; 
         
     }
 }

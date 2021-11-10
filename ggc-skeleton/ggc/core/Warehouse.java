@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.util.ElementScanner14;
-
 import ggc.core.exception.BadEntryException;
 import ggc.core.exception.CoreDuplicatePartnerKeyException;
 import ggc.core.exception.CoreInvalidDateException;
@@ -56,7 +54,6 @@ public class Warehouse implements Serializable {
     if(days < 0)
       throw new CoreInvalidDateException(days);
     _date.add(days);
-    updateAccountingBalance();
   }
 
   //PRODUCTS
@@ -129,7 +126,24 @@ public class Warehouse implements Serializable {
     if(_partners.containsKey(id.toLowerCase()))
       return _partners.get(id.toLowerCase());
     throw new CoreUnknownPartnerKeyException(id);
-      
+  }
+
+  public String getPartnerAcquisitions(String partnerId) throws CoreUnknownPartnerKeyException {
+    String acquisitions="";
+    Partner partner = getPartner(partnerId);
+    for(Acquisition acquisition : partner.getAcquisitions()){
+      acquisitions+=acquisition.toString(_date);
+    }
+    return acquisitions;
+  }
+
+  public String getPartnerSales(String partnerId) throws CoreUnknownPartnerKeyException{
+    String sales = "";
+    Partner partner = getPartner(partnerId);
+    for(Sale sale : partner.getSales()){
+      sales+=sale.toString(_date);
+    }
+    return sales;
   }
 
   //TRANSACTIONS
@@ -150,21 +164,19 @@ public class Warehouse implements Serializable {
     return transactions;
   }
 
+  public String showTransaction(int id) throws CoreUnknownTransactionKeyException{
+    Transaction transaction = getTransaction(id);
+    return transaction.toString(_date);
+  }
+
   public void payTransaction(int id)throws CoreUnknownTransactionKeyException{
       Transaction transaction = getTransaction(id);
       if(transaction.isPaid())
         return;
-      if(!(transaction instanceof SaleByCredit))
-        return;
       SaleByCredit sale = (SaleByCredit) transaction;
       double payment = sale.getAmountOwed();
-      sale.setAmountOwed(0);
-      sale.setAmountPaid(payment);
-      sale.setPaymentDate(_date);
+      sale.paySale(payment, _date);
       updateAvailableBalance(payment);
-      updateAccountingBalance();
-      sale.getPartner().updatePayedSales(payment);
-      sale.getPartner().updatePoints(_date, sale);
   }
 
   public void registerBreakdownSale(String partnerId, String productId, int amount) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException, CoreUnavailableProductException{
@@ -193,69 +205,44 @@ public class Warehouse implements Serializable {
       payedValue = 0;
     else
       payedValue=realValue;
-    Transaction transaction = new BreakdownSale(_nextTransactionId, realValue, amount, product, partner, payedValue);
+    Transaction transaction = new BreakdownSale(_nextTransactionId, realValue, amount, product, partner, payedValue, _date.getDays());
     transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addBreakdownSale((BreakdownSale)transaction, _date);
-    updateAccountingBalance();
-    updateAvailableBalance(payedValue);
-    
+    partner.updatePoints(_date, (BreakdownSale)transaction);
+    updateAvailableBalance(payedValue);    
   }
 
-  public void registerSaleByCredit(String productId, String partnerId, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
+  public void registerSaleByCredit(String partnerId, String productId, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
     Partner partner = getPartner(partnerId);
     Product product = getProduct(productId);
-    if(product instanceof SimpleProduct)
-      registerSaleByCreditSimple(product, partner, deadline, amount);
-    else
-      registerSaleByCreditAggregate(product, partner, deadline, amount);
-  }
-
-
-
-  public void registerSaleByCreditSimple(Product product, Partner partner, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
     if(!product.checkQuantity(amount, partner))
-      throw new CoreUnavailableProductException(product.getId(), product.getTotalStock());
+      product.aggregateProduct(productId, amount);
     List<Batch> batches = product.getBatchesSortedByPrice();
     double baseValue=calculateBaseValueAndUpdateBatches(product, partner, amount, batches);
     Transaction transaction = new SaleByCredit(_nextTransactionId, baseValue, amount, product, partner, deadline);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addSaleByCredit((SaleByCredit)transaction, _date);
-    updateAccountingBalance();
-  }
-
-  public void registerSaleByCreditAggregate(Product product, Partner partner, int deadline, int amount) throws CoreUnknownPartnerKeyException, CoreUnavailableProductException, CoreUnknownProductKeyException{
-    if(!product.checkQuantity(amount, partner))
-      aggregateProduct(product.getId(), amount);
-    List<Batch> batches = product.getBatchesSortedByPrice();
-    double baseValue=calculateBaseValueAndUpdateBatches(product, partner, amount, batches);
-    Transaction transaction = new SaleByCredit(_nextTransactionId, baseValue, amount, product, partner, deadline);
-    _transactions.put(_nextTransactionId++, transaction);
-    partner.addSaleByCredit((SaleByCredit)transaction, _date);
-    updateAccountingBalance();
   }
 
   public double calculateBaseValueAndUpdateBatches(Product product, Partner partner, int amount, List<Batch> batches){
     double baseValue=0;
-    int i=0;
     Batch batch;
-    Iterator<Batch> iter = _batches.iterator();
+    Iterator<Batch> iter = product.getBatchesSortedByPrice().iterator();
     while(amount != 0 && iter.hasNext()){
       batch = iter.next();
-      if(batch.getQuantity() < amount){
+      if(batch.getQuantity() <= amount){
         baseValue += batch.getQuantity()*batch.getPrice();
         amount -= batch.getQuantity();
-        iter.remove();
-        product.removeBatch(batch);
-        partner.removeBatch(batch);
+        removeBatch(batch);
       }
-      if(batch.getQuantity() > amount){
+      else if(batch.getQuantity() > amount){
         baseValue += amount*batch.getPrice();
-        product.getBatches().get(i).removeAmount(amount);
+        batch.removeAmount(amount);
         amount = 0;
       }
-      i++;
      }
+    product.updateTotalStock();
     return baseValue;
   }
 
@@ -269,12 +256,11 @@ public class Warehouse implements Serializable {
       product = new SimpleProduct(productId);
       addProduct(product);
     }
-    Transaction transaction = new Acquisition(_nextTransactionId, baseValue, quantity, product, partner);
+    Transaction transaction = new Acquisition(_nextTransactionId, baseValue, quantity, product, partner, _date.getDays());
     transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addAcquisition((Acquisition) transaction);
     addBatch(new Batch(productPrice, quantity, partner, product));
-    updateAccountingBalance();
     updateAvailableBalance(-baseValue);
   }
 
@@ -282,17 +268,30 @@ public class Warehouse implements Serializable {
     Partner partner = getPartner(partnerId);
     double baseValue=quantity*productPrice;
     List<Component> components = new ArrayList<>();
+    try{
+      getProduct(productId);
+    } catch(CoreUnknownProductKeyException e){
     for(int i = 0;i < numberComponents; i++){
       components.add(new Component(quantities.get(i), getProduct(productsIDs.get(i))));
     }
     addProduct(new AggregateProduct(productId, new Recipe(alpha, components)));
-    Transaction transaction = new Acquisition(_nextTransactionId, baseValue, quantity, _products.get(productId), partner);
+    }
+    Transaction transaction = new Acquisition(_nextTransactionId, baseValue, quantity, _products.get(productId), partner, _date.getDays());
     transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addAcquisition((Acquisition) transaction);
     addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
-    updateAccountingBalance();
     updateAvailableBalance(-baseValue);
+  }
+
+  public String getPayedSalesByPartner(String partnerId) throws CoreUnknownPartnerKeyException{
+    Partner partner = getPartner(partnerId);
+    String payments="";
+    for(Sale sale: partner.getSales()){
+      if(sale.isPaid())
+        payments = sale.toString(_date);
+    }
+    return payments;
   }
 
 
@@ -303,7 +302,7 @@ public class Warehouse implements Serializable {
   }
 
   public List<Batch> getSortedBatches(){
-    List<Batch> batches = getBatches();
+    List<Batch> batches = _batches;
     batches.sort(new BatchComparator());
     return Collections.unmodifiableList(batches);
   }
@@ -333,6 +332,20 @@ public class Warehouse implements Serializable {
     batch.getPartner().addBatch(batch);
   }
 
+  public void removeBatch(Batch batch){
+    _batches.remove(batch);
+    batch.getProduct().removeBatch(batch);
+    batch.getPartner().removeBatch(batch);
+  }
+
+  public List<Batch> getBatchesProductUnderPrice(int price){
+    List<Batch> batches = getSortedBatches();
+    List<Batch> batchesPrice = new ArrayList<>();
+    for(Batch batch: batches)
+      if(batch.getPrice() < price)
+        batchesPrice.add(batch);
+    return batchesPrice;
+  }
 
   //BALANCE
 
@@ -341,6 +354,7 @@ public class Warehouse implements Serializable {
   }
 
   public double getAccountingBalance(){
+    updateAccountingBalance();
     return _accountingBalance;
   }
 
@@ -352,21 +366,10 @@ public class Warehouse implements Serializable {
     _accountingBalance=0;
     List<Transaction> transactions = new ArrayList<>(_transactions.values());
     for(Transaction transaction : transactions){
-      if(transaction instanceof Acquisition){
-        Acquisition acquisition = (Acquisition) transaction;
-        double payment = acquisition.getBaseValue();
-        _accountingBalance -= payment;
+        _accountingBalance += transaction.calculatePayment(_date);
       }
-      else{
-        Sale sale = (Sale) transaction;
-        if(sale.isPaid())
-          _accountingBalance += sale.getAmountPaid();
-        else{
-          _accountingBalance += ((SaleByCredit)sale).getAmountOwed();
-        } 
-      }
-    }
   }
+  
 
 
   /**
