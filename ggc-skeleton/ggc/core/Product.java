@@ -114,16 +114,20 @@ public abstract class Product implements Serializable{
         return null;
     }
 
-    public void checkNotification(Batch batch){
+    public Notification checkNotification(Batch batch){
         if(getTotalStock() == 0)
-            createNotification(TypeNotification.NEW, batch);
+            return createNotification(TypeNotification.NEW, batch);
         else if(getLowestPrice() > batch.getPrice())
-            createNotification(TypeNotification.BARGAIN, batch);
+            return createNotification(TypeNotification.BARGAIN, batch);
+        return null;
     }
 
     public void addBatch(Batch batch, boolean notifiable) {
-        if(notifiable)
-            checkNotification(batch);
+        Notification notification;
+        if(notifiable){
+            notification = checkNotification(batch);
+            
+        } 
         _batches.add(batch);
         updateTotalStock();
         updateMaxPrice();
