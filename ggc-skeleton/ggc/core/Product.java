@@ -3,9 +3,11 @@ package ggc.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import ggc.core.exception.CoreUnavailableProductException;
 
@@ -32,6 +34,8 @@ public abstract class Product implements Serializable{
     /*Guarda o stock total de um produto no armazém */
 
     private int _totalStock;
+
+    private Set<NotificationObserver> _observers = new HashSet<>();
 
     private int _periodN;
 
@@ -72,7 +76,7 @@ public abstract class Product implements Serializable{
     }
 
     public double getLowestPrice(){
-        if(_batches==null)
+        if(_batches.isEmpty())
             return _maxPrice;
         double lowPrice = _maxPrice;
         for(Batch batch : _batches){
@@ -82,6 +86,7 @@ public abstract class Product implements Serializable{
         return lowPrice;
     }
 
+/*
     public Batch getLowestBatch(){
         if(_batches==null)
             return null;
@@ -92,12 +97,33 @@ public abstract class Product implements Serializable{
         }
         return lowBatch;
     }
-
+*/
     /**
      * Adiciona um lote à coleção que guarda os lotes onde o produto está contido.
      * @param batch lote a adicionar.
      */
-    public void addBatch(Batch batch) {
+
+    public Notification createNotification(TypeNotification type, Batch batch){
+        switch(type){
+            case NEW:
+            return new Notification(batch.getProduct(), batch.getPrice(), type);
+
+            case BARGAIN:
+            return new Notification(batch.getProduct(), batch.getPrice(), type);
+        }
+        return null;
+    }
+
+    public void checkNotification(Batch batch){
+        if(getTotalStock() == 0)
+            createNotification(TypeNotification.NEW, batch);
+        else if(getLowestPrice() > batch.getPrice())
+            createNotification(TypeNotification.BARGAIN, batch);
+    }
+
+    public void addBatch(Batch batch, boolean notifiable) {
+        if(notifiable)
+            checkNotification(batch);
         _batches.add(batch);
         updateTotalStock();
         updateMaxPrice();
@@ -116,6 +142,16 @@ public abstract class Product implements Serializable{
             totalStock += batch.getQuantity();
         }
         _totalStock = totalStock;
+    }
+
+    public void removeObserver(NotificationObserver observer){
+        if(_observers.contains(observer))
+            _observers.remove(observer);
+    }
+
+    public void addObserver(NotificationObserver observer){
+        if(!_observers.contains(observer))
+            _observers.add(observer);
     }
 
     /**
@@ -146,6 +182,12 @@ public abstract class Product implements Serializable{
         List<Batch> sortedBatches = new ArrayList<>(_batches);
         sortedBatches.sort(new BatchPriceComparator());
         return sortedBatches;
+    }
+
+    
+    public void notifyObservers(Notification notification){
+        for(NotificationObserver observer: _observers)
+            observer.updateNotifications(notification);;
     }
 
     /** substitui o metodo para comparar produtos utilizando o identificador unico

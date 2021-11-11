@@ -7,13 +7,15 @@ import java.util.Set;
 
 public class Notification implements Serializable{
     Set<NotificationObserver> _observers = new HashSet<>();
-    String _productId;
+    Product _product;
     double _productPrice;
     TypeNotification _type;
     NotificationDeliveryMethod _deliveryMethod;
     
-    public Notification(String productId){
-        _productId = productId;
+    public Notification(Product product, double productPrice, TypeNotification type){
+        _product = product;
+        _productPrice = productPrice;
+        _type = type;
     }
     
     public void setProductPrice(double productPrice){
@@ -28,14 +30,10 @@ public class Notification implements Serializable{
         _deliveryMethod=delivery;
     }
 
-    public void notifyObservers(){
-        for(NotificationObserver observer: _observers)
-            observer.notify();
-    }
 
     @Override
     public String toString(){
-        return ""+_type.name()+"|"+_productId+"|"+_productPrice;
+        return ""+_type.name()+"|"+_product+"|"+_productPrice;
 }
 
 }

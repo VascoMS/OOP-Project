@@ -71,6 +71,7 @@ public class Warehouse implements Serializable {
   }
 
   public void addProduct(Product product) {
+    setBaseObservers(product);
     _products.put(product.getId(), product);
   }
 
@@ -97,8 +98,9 @@ public class Warehouse implements Serializable {
     return components;
   }
   
-  public void aggregateProduct(String productId, int amount){
-    //boa pergunta como fazer
+  public void setBaseObservers(Product product){
+    for(Partner partner : _partners.values())
+      product.addObserver(partner);
   }
 
 
@@ -116,10 +118,18 @@ public class Warehouse implements Serializable {
     return partners;
   }
 
-  public void addPartner(Partner partner) throws CoreDuplicatePartnerKeyException{
-    if(_partners.containsKey(partner.getId().toLowerCase()))
-      throw new CoreDuplicatePartnerKeyException(partner.getId());
-    _partners.put(partner.getId().toLowerCase(), partner);
+  public void addPartner(String id, String name, String address) throws CoreDuplicatePartnerKeyException{
+    if(_partners.containsKey(id.toLowerCase()))
+      throw new CoreDuplicatePartnerKeyException(id);
+    Partner newPartner = new Partner(id, name, address);
+    addObserverToAllProducts(newPartner);
+    _partners.put(id.toLowerCase(), newPartner);
+  }
+
+  public void addObserverToAllProducts(Partner partner){
+    for(Product product: _products.values()){
+      product.addObserver(partner);
+    }
   }
 
   public Partner getPartner(String id) throws CoreUnknownPartnerKeyException{
@@ -195,7 +205,7 @@ public class Warehouse implements Serializable {
       double price = component.getProduct().getLowestPrice();
       int quantity = component.getQuantity();
       componentsValue += price*quantity;
-      addBatch(new Batch(price, quantity*amount, partner, product));
+      addBatch(new Batch(price, quantity*amount, partner, component.getProduct()), true);
     }
     //cada produto derivado da este valor
     componentsValue *= amount;
@@ -250,8 +260,10 @@ public class Warehouse implements Serializable {
     Partner partner = getPartner(partnerId);
     Product product;
     double baseValue=quantity*productPrice;
+    boolean notifiable = false;
     try {
       product = getProduct(productId);
+      notifiable = true;
     } catch (CoreUnknownProductKeyException e) {
       product = new SimpleProduct(productId);
       addProduct(product);
@@ -260,16 +272,18 @@ public class Warehouse implements Serializable {
     transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addAcquisition((Acquisition) transaction);
-    addBatch(new Batch(productPrice, quantity, partner, product));
+    addBatch(new Batch(productPrice, quantity, partner, product), notifiable);
     updateAvailableBalance(-baseValue);
   }
 
   public void registerAcquisition(String partnerId, String productId, double productPrice, int quantity, List<String> productsIDs, List<Integer> quantities, double alpha, int numberComponents) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
     Partner partner = getPartner(partnerId);
     double baseValue=quantity*productPrice;
+    boolean notifiable = false;
     List<Component> components = new ArrayList<>();
     try{
       getProduct(productId);
+      notifiable = true;
     } catch(CoreUnknownProductKeyException e){
     for(int i = 0;i < numberComponents; i++){
       components.add(new Component(quantities.get(i), getProduct(productsIDs.get(i))));
@@ -280,7 +294,7 @@ public class Warehouse implements Serializable {
     transaction.setPaymentDate(_date);
     _transactions.put(_nextTransactionId++, transaction);
     partner.addAcquisition((Acquisition) transaction);
-    addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)));
+    addBatch(new Batch(productPrice, quantity, partner, _products.get(productId)), notifiable);
     updateAvailableBalance(-baseValue);
   }
 
@@ -326,9 +340,9 @@ public class Warehouse implements Serializable {
     return batchesProduct;
   }
 
-  public void addBatch(Batch batch){
+  public void addBatch(Batch batch, boolean notifiable){
     _batches.add(batch);
-    batch.getProduct().addBatch(batch);
+    batch.getProduct().addBatch(batch, notifiable);
     batch.getPartner().addBatch(batch);
   }
 

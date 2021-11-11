@@ -61,8 +61,7 @@ public class WarehouseManager {
   //PARTNERS
 
   public void addPartner(String id, String name, String address) throws CoreDuplicatePartnerKeyException{
-    Partner newPartner = new Partner(id, name, address);
-    _warehouse.addPartner(newPartner);
+    _warehouse.addPartner(id, name, address);
   }
 
   public Partner getPartner(String id) throws CoreUnknownPartnerKeyException {
@@ -126,8 +125,9 @@ public class WarehouseManager {
 
   public void addBatch(double price, int quantity, Partner partner, Product product){
     Batch batch = new Batch(price, quantity, partner, product);
-    _warehouse.addBatch(batch);
+    _warehouse.addBatch(batch, false);
   }
+
   public List<Batch> getBatchesSorted(){
     return _warehouse.getSortedBatches();
   }
