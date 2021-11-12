@@ -21,13 +21,13 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
     super(Label.REGISTER_ACQUISITION_TRANSACTION, receiver);
     addStringField("partnerId", Message.requestPartnerKey());
     addStringField("productId", Message.requestProductKey());
-    addIntegerField("price", Message.requestPrice());
+    addRealField("price", Message.requestPrice());
     addIntegerField("amount", Message.requestAmount());
   }
 
   @Override
   public final void execute() throws CommandException {
-    double productPrice=integerField("price");
+    double productPrice=realField("price");
     int productAmount = integerField("amount");
     List<String> products = new ArrayList<>();
     List<Integer> quantities = new ArrayList<>();

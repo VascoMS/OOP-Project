@@ -42,8 +42,7 @@ Escolha uma opção: Gestão de Parceiros
 5 - Mostrar compras com parceiro
 6 - Mostrar vendas (e desagregações) com parceiro
 0 - Sair
-Escolha uma opção: Identificador do parceiro: S1|Toshiba|Tokyo, Japan|NORMAL|0|0|0|0
-Gestão de Parceiros
+Escolha uma opção: Identificador do parceiro: Gestão de Parceiros
 1 - Mostrar parceiro
 2 - Mostrar parceiros
 3 - Registar parceiro
@@ -51,7 +50,7 @@ Gestão de Parceiros
 5 - Mostrar compras com parceiro
 6 - Mostrar vendas (e desagregações) com parceiro
 0 - Sair
-Escolha uma opção: Identificador do parceiro: M2|Toshiba|Tokyo, Japan|NORMAL|0|0|0|0
+Escolha uma opção: Identificador do parceiro: COMPRA|0|M1|SAL|23|529|0
 Gestão de Parceiros
 1 - Mostrar parceiro
 2 - Mostrar parceiros
@@ -71,4 +70,5 @@ Escolha uma opção: Menu Principal
 8 - Menu de Consultas
 9 - Ver Saldo Global
 0 - Sair
+Escolha uma opção: Número inválido!
 Escolha uma opção: 

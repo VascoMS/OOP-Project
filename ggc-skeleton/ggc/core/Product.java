@@ -3,11 +3,9 @@ package ggc.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import ggc.core.exception.CoreUnavailableProductException;
 
@@ -35,7 +33,7 @@ public abstract class Product implements Serializable{
 
     private int _totalStock;
 
-    private Set<NotificationObserver> _observers = new HashSet<>();
+    private List<NotificationObserver> _observers = new ArrayList<>();
 
     private int _periodN;
 
@@ -53,29 +51,29 @@ public abstract class Product implements Serializable{
      * Obter o preço máximo do produto.
      * @return preço máximo do produto.
      */
-    public double getMaxPrice(){
+    double getMaxPrice(){
         return _maxPrice;
     }
 
-    public int getPeriodN(){
+    int getPeriodN(){
         return _periodN;
     }
 
-    public void setPeriodN(int periodN){
+    void setPeriodN(int periodN){
         _periodN = periodN;
     }
 
     /**
      * Atualiza o preço máximo do produto, procurando o preço maximo nos lotes do produto.
      */
-    public void updateMaxPrice(){
+    void updateMaxPrice(){
         for(Batch batch: _batches){
             if(batch.getPrice() > _maxPrice)
                 _maxPrice = batch.getPrice();
         }
     }
 
-    public double getLowestPrice(){
+    double getLowestPrice(){
         if(_batches.isEmpty())
             return _maxPrice;
         double lowPrice = _maxPrice;
@@ -86,35 +84,23 @@ public abstract class Product implements Serializable{
         return lowPrice;
     }
 
-/*
-    public Batch getLowestBatch(){
-        if(_batches==null)
-            return null;
-        Batch lowBatch = _batches.get(0);
-        for(Batch batch : _batches){
-            if(batch.getPrice() < lowBatch.getPrice())
-                lowBatch = batch;
-        }
-        return lowBatch;
-    }
-*/
     /**
      * Adiciona um lote à coleção que guarda os lotes onde o produto está contido.
      * @param batch lote a adicionar.
      */
 
-    public Notification createNotification(TypeNotification type, Batch batch){
-        switch(type){
-            case NEW:
+    Notification createNotification(TypeNotification type, Batch batch){
+        switch(type.name()){
+            case "NEW":
             return new Notification(batch.getProduct(), batch.getPrice(), type);
 
-            case BARGAIN:
+            case "BARGAIN":
             return new Notification(batch.getProduct(), batch.getPrice(), type);
         }
         return null;
     }
 
-    public Notification checkNotification(Batch batch){
+    Notification checkNotification(Batch batch){
         if(getTotalStock() == 0)
             return createNotification(TypeNotification.NEW, batch);
         else if(getLowestPrice() > batch.getPrice())
@@ -122,23 +108,24 @@ public abstract class Product implements Serializable{
         return null;
     }
 
-    public void addBatch(Batch batch, boolean notifiable) {
+    void addBatch(Batch batch, boolean notifiable) {
         Notification notification;
         if(notifiable){
             notification = checkNotification(batch);
-            
+            if(notification!=null)
+                notifyObservers(notification);
         } 
         _batches.add(batch);
         updateTotalStock();
         updateMaxPrice();
     }
 
-    public void removeBatch(Batch batch){
+    void removeBatch(Batch batch){
         _batches.remove(batch);
         updateTotalStock();
     }
 
-    public void updateTotalStock(){
+    void updateTotalStock(){
         Iterator<Batch> iter = _batches.iterator();
         int totalStock = 0;
         while(iter.hasNext()){
@@ -148,12 +135,12 @@ public abstract class Product implements Serializable{
         _totalStock = totalStock;
     }
 
-    public void removeObserver(NotificationObserver observer){
+    void removeObserver(NotificationObserver observer){
         if(_observers.contains(observer))
             _observers.remove(observer);
     }
 
-    public void addObserver(NotificationObserver observer){
+    void addObserver(NotificationObserver observer){
         if(!_observers.contains(observer))
             _observers.add(observer);
     }
@@ -162,7 +149,7 @@ public abstract class Product implements Serializable{
      * Devolve o id do produto
      * @return id do produto 
      */
-    public String getId(){
+    String getId(){
         return _id;
     }
 
@@ -178,20 +165,26 @@ public abstract class Product implements Serializable{
      * Devolve o stock total do produto
      * @return stock total do produto
      */
-    public int getTotalStock(){
+    int getTotalStock(){
         return _totalStock;
     }
 
-    public List<Batch> getBatchesSortedByPrice(){
+    List<Batch> getBatchesSortedByPrice(){
         List<Batch> sortedBatches = new ArrayList<>(_batches);
         sortedBatches.sort(new BatchPriceComparator());
         return sortedBatches;
     }
 
-    
-    public void notifyObservers(Notification notification){
+    void toggleObserver(NotificationObserver observer){
+        if(_observers.contains(observer))
+            _observers.remove(observer);
+        else
+            _observers.add(observer);
+    }
+
+    void notifyObservers(Notification notification){
         for(NotificationObserver observer: _observers)
-            observer.updateNotifications(notification);;
+            observer.sendNotifications(notification);
     }
 
     /** substitui o metodo para comparar produtos utilizando o identificador unico
@@ -211,7 +204,29 @@ public abstract class Product implements Serializable{
         return Objects.hash(_id);
     }
 
-    abstract boolean checkQuantity(int quantity, Partner partner);
-    abstract void aggregateProduct(String productId, int quantity) throws CoreUnavailableProductException;
-    
-}
+    abstract boolean checkAggregation(int amount, int available) throws CoreUnavailableProductException;
+    abstract boolean checkQuantity(int quantity);
+    abstract void aggregateProduct(int quantity, int available, Partner partner, Warehouse warehouse) throws CoreUnavailableProductException;
+
+    double calculatePrice(int amount, Warehouse warehouse){
+            double baseValue=0;
+            int quantity = amount;
+            Batch batch;
+            Iterator<Batch> iter = getBatchesSortedByPrice().iterator();
+            while(amount != 0 && iter.hasNext()){
+              batch = iter.next();
+              if(batch.getQuantity() <= amount){
+                baseValue += batch.getQuantity()*batch.getPrice();
+                amount -= batch.getQuantity();
+                warehouse.removeBatch(batch);
+            }
+            else if(batch.getQuantity() > amount){
+                baseValue += amount*batch.getPrice();
+                batch.removeAmount(amount);
+                amount = 0;
+              }
+             }
+            updateTotalStock();
+            return baseValue/quantity;
+        }
+    }

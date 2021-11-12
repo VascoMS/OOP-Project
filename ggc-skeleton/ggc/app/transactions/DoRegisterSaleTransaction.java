@@ -1,13 +1,10 @@
 package ggc.app.transactions;
 
-import pt.tecnico.uilib.forms.Form;
+
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import ggc.app.exception.InvalidDateException;
 import ggc.app.exception.UnavailableProductException;
 import ggc.app.exception.UnknownPartnerKeyException;
 import ggc.app.exception.UnknownProductKeyException;
@@ -44,7 +41,7 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
     } catch(CoreUnknownProductKeyException pr){
       throw new UnknownProductKeyException(productId);
     } catch(CoreUnavailableProductException apr){
-      throw new UnavailableProductException(productId, amount, (int) apr.getAvailable());
+      throw new UnavailableProductException(apr.getId(), apr.getAmount(), apr.getAvailable());
     }
 
     

@@ -11,13 +11,26 @@ public class BreakdownSale extends Sale{
         return true;
     }
 
-    public double calculatePayment(Date currentDate){
+    double calculatePayment(Date currentDate){
         return super.getAmountPaid();
     }
 
+    String showComponents(){
+        Recipe recipe = ((AggregateProduct)super.getProduct()).getRecipe();
+        String componentsString="";
+        for(Component component : recipe.getComponents()){
+            if(componentsString!="")
+                componentsString += "#";
+            componentsString += component.getProduct().getId()+":"
+            +Math.round(component.getQuantity()*super.getQuantity())+":"
+            +Math.round(component.getProduct().getLowestPrice()*component.getQuantity()*super.getQuantity());
+       }
+       return componentsString;
+    }
+
     public String toString(Date date){
-        return "DESAGREGACAO"+"|"+super.getId()+"|"+super.getPartner().getId()+"|"
+        return "DESAGREGAÇÃO"+"|"+super.getId()+"|"+super.getPartner().getId()+"|"
         +super.getProduct().getId()+"|"+super.getQuantity()+"|"+Math.round(super.getBaseValue())+"|"
-        +Math.round(super.getAmountPaid())+"|"+super.getPaymentDate()+"|"+ ((AggregateProduct)super.getProduct()).getRecipe().toString();   
+        +Math.round(super.getAmountPaid())+"|"+super.getPaymentDate()+"|"+ showComponents();   
     }
 }

@@ -1,6 +1,7 @@
 package ggc.app.lookups;
 
 import ggc.app.exception.UnknownPartnerKeyException;
+import ggc.core.Sale;
 import ggc.core.WarehouseManager;
 //FIXME import classes
 import ggc.core.exception.CoreUnknownPartnerKeyException;
@@ -21,7 +22,9 @@ public class DoLookupPaymentsByPartner extends Command<WarehouseManager> {
   public void execute() throws CommandException {
     String partnerId = stringField("partnerId");
     try {
-      _display.popup(_receiver.getPayedSalesByPartner(partnerId));
+      for(Sale sale : _receiver.getPayedSalesByPartner(partnerId))
+        _display.addLine(sale.toString(_receiver.getDateWarehouse()));
+      _display.display();
     } catch (CoreUnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(partnerId);
     }

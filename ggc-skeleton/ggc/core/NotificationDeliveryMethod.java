@@ -1,5 +1,5 @@
 package ggc.core;
 
-interface NotificationDeliveryMethod{
-    public void send();
+interface NotificationDeliveryMethod {
+    void send(Partner partner, Notification notification);
 }

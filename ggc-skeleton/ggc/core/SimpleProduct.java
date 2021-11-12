@@ -1,21 +1,25 @@
 package ggc.core;
 
+
 import ggc.core.exception.CoreUnavailableProductException;
 
 public class SimpleProduct extends Product{
     SimpleProduct(String id){
         super(id);
         setPeriodN(5);
-    }
-
-    @Override
-    public void aggregateProduct(String productId, int amount) throws CoreUnavailableProductException{
-        throw new CoreUnavailableProductException(productId, amount);
 
     }
+
+    boolean checkAggregation(int amount, int available) throws CoreUnavailableProductException{
+        throw new CoreUnavailableProductException(getId(), available, amount);
+    }
+    void aggregateProduct(int amount, int available, Partner partner, Warehouse warehouse) throws CoreUnavailableProductException{
+        throw new CoreUnavailableProductException(getId(), available, amount);
+    }
+
     
     @Override
-    public boolean checkQuantity(int quantity, Partner partner){
+    boolean checkQuantity(int quantity){
         return quantity <= super.getTotalStock();
     }
 

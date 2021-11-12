@@ -30,7 +30,7 @@ public class WarehouseManager {
 
   //PRODUCTS
 
-  public Product getProduct(String id) throws CoreUnknownProductKeyException{
+  Product getProduct(String id) throws CoreUnknownProductKeyException{
     return _warehouse.getProduct(id);
   }
 
@@ -38,14 +38,14 @@ public class WarehouseManager {
     return _warehouse.hasProduct(id);
   }
 
-  public void registerAggregateProduct(String id, double alpha, List<Product> products, List<Integer> quantities){
+  void registerAggregateProduct(String id, double alpha, List<Product> products, List<Integer> quantities){
     List<Component> components = _warehouse.createComponents(products, quantities);
     Recipe recipe = new Recipe(alpha, components);
     Product newProduct = new AggregateProduct(id, recipe);
     _warehouse.addProduct(newProduct);
   }
 
-  public void registerSimpleProduct(String id){
+  void registerSimpleProduct(String id){
     Product newProduct = new SimpleProduct(id);
     _warehouse.addProduct(newProduct);
   }
@@ -64,9 +64,22 @@ public class WarehouseManager {
     _warehouse.addPartner(id, name, address);
   }
 
-  public Partner getPartner(String id) throws CoreUnknownPartnerKeyException {
+  Partner getPartner(String id) throws CoreUnknownPartnerKeyException {
     return _warehouse.getPartner(id);
   }
+
+  public String showPartner(String partnerId) throws CoreUnknownPartnerKeyException{
+    return _warehouse.showPartner(partnerId);
+  }
+
+  public List<Notification> showNotifications(String partnerId) throws CoreUnknownPartnerKeyException{
+    return _warehouse.showNotifications(partnerId);
+  }
+
+  public void toggleNotifications(String partnerId, String productId) throws CoreUnknownPartnerKeyException, CoreUnknownProductKeyException{
+    _warehouse.toggleNotifications(partnerId, productId);
+  }
+
 
   public List<Partner> getSortedPartners(){
     return _warehouse.getSortedPartners();
@@ -76,11 +89,11 @@ public class WarehouseManager {
     return _warehouse.getPartners();
   }
 
-  public String getPartnerAcquisitions(String partnerId) throws CoreUnknownPartnerKeyException {
+  public List<Acquisition> getPartnerAcquisitions(String partnerId) throws CoreUnknownPartnerKeyException {
     return _warehouse.getPartnerAcquisitions(partnerId);
   }
 
-  public String getPartnerSales(String partnerId) throws CoreUnknownPartnerKeyException {
+  public List<Sale> getPartnerSales(String partnerId) throws CoreUnknownPartnerKeyException {
     return _warehouse.getPartnerSales(partnerId);
   }
 
@@ -109,7 +122,7 @@ public class WarehouseManager {
     _warehouse.payTransaction(id);
   }
 
-  public String getPayedSalesByPartner(String partnerId) throws CoreUnknownPartnerKeyException{
+  public List<Sale> getPayedSalesByPartner(String partnerId) throws CoreUnknownPartnerKeyException{
     return _warehouse.getPayedSalesByPartner(partnerId);
   }
 
@@ -119,11 +132,11 @@ public class WarehouseManager {
 
   //BATCHES
 
-  public List<Batch> getAllBatchesWarehouse(){
+  List<Batch> getAllBatchesWarehouse(){
     return _warehouse.getBatches();
   }
 
-  public void addBatch(double price, int quantity, Partner partner, Product product){
+  void addBatch(double price, int quantity, Partner partner, Product product){
     Batch batch = new Batch(price, quantity, partner, product);
     _warehouse.addBatch(batch, false);
   }
@@ -142,7 +155,7 @@ public class WarehouseManager {
     return _warehouse.getBatchesProduct(this.getBatchesSorted(), product);
   }
 
-  public List<Batch> getBatchesProductUnderPrice(int price){
+  public List<Batch> getBatchesProductUnderPrice(double price){
     return _warehouse.getBatchesProductUnderPrice(price);
   }
   
@@ -157,11 +170,11 @@ public class WarehouseManager {
     return _warehouse.getAvailableBalance();
   }
 
-  public void updateAccountingBalance(){
+  void updateAccountingBalance(){
     _warehouse.updateAccountingBalance();
   }
 
-  public void updateAvailableBalance(double payment){
+  void updateAvailableBalance(double payment){
     _warehouse.updateAvailableBalance(payment);
   }
 

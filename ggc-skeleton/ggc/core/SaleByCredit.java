@@ -1,41 +1,27 @@
 package ggc.core;
 
 public class SaleByCredit extends Sale {
-    private double _amountOwed;
 
     SaleByCredit(int id, double baseValue, int quantity, Product product, Partner partner, int deadline) {
         super(id, baseValue, quantity, product, partner, deadline);
-        _amountOwed = baseValue;
         super.setAmountPaid(0);
     }
 
-    public boolean isPaid() {
+    boolean isPaid() {
         return super.getAmountPaid() != 0;
     }
 
-    public void updateAmountOwed(Date currentDate) {
-        _amountOwed = calculatePayment(currentDate);
-    }
 
-    public void setAmountOwed(double amount) {
-        _amountOwed = amount;
-    }
-
-    public double getAmountOwed() {
-        return _amountOwed;
-    }
-
-    public double calculatePayment(Date currentDate) {
+    double calculatePayment(Date currentDate) {
         double discount = super.getPartner().computeDiscount(currentDate, getDeadline(), super.getProduct().getPeriodN());
         double fine = super.getPartner().computeFine(currentDate, getDeadline(), super.getProduct().getPeriodN());
-        double payment = super.getBaseValue() + super.getBaseValue() * discount + super.getBaseValue() * fine;
+        double payment = super.getBaseValue() - (super.getBaseValue() * discount) + (super.getBaseValue() * fine);
         return payment;
     }
 
-    public void paySale(double payment, Date date) {
-        setAmountOwed(0);
+    void paySale(double payment, Date date) {
         setAmountPaid(payment);
-        setPaymentDate(date);
+        setPaymentDate(date.getDays());
         getPartner().updatePayedSales(payment);
         getPartner().updatePoints(date, this);
     }

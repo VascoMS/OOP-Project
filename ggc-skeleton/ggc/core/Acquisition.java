@@ -7,11 +7,11 @@ public class Acquisition extends Transaction{
         super.setAmountPaid(-baseValue);
     }
 
-    public boolean isPaid(){
+    boolean isPaid(){
         return true;
     }
 
-    public double calculatePayment(Date currentDate){
+    double calculatePayment(Date currentDate){
         return super.getAmountPaid();
     }
 

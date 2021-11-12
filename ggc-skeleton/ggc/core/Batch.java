@@ -9,7 +9,9 @@ import java.io.Serializable;
  * @author Vasco Silva ist199132, Vicente Gomes ist199135
  * @version 1.0
  */
+
 public class Batch implements Serializable{
+
 /* preco por unidade de produto armazenado */
     private double _price;
 /* quantidade de produto(stock) no lote */
@@ -26,55 +28,57 @@ public class Batch implements Serializable{
  * @param partner parceiro associado ao lote
  * @param product produto armazenado no lote
 */
-public Batch(double price, int quantity, Partner partner, Product product){
-    _price=price;
-    _quantity=quantity;
-    _partner=partner;
-    _product=product;
-}
-/** obter preco por unidade de produto
- * @return double preco
- */
-public double getPrice(){
-    return _price;
-}
-/** obter quantidade de produto
- * @return int quantidade
- */
-public int getQuantity(){
-    return _quantity;
-}
+    Batch(double price, int quantity, Partner partner, Product product){
+        _price=price;
+        _quantity=quantity;
+        _partner=partner;
+        _product=product;
+    }
+    /** obter preco por unidade de produto
+     * @return double preco
+     */
+    double getPrice(){
+        return _price;
+    }
+    /** obter quantidade de produto
+     * @return int quantidade
+     */
+    int getQuantity(){
+        return _quantity;
+    }
 
-/** obter parceiro
- * @return Partner parceiro
- */
-public Partner getPartner(){
-    return _partner;
-}
+    /** obter parceiro
+     * @return Partner parceiro
+     */
+    Partner getPartner(){
+        return _partner;
+    }
 
-public void removeAmount(int amount){
-    _quantity -= amount;
-}
 
-/** obter produto
- * @return Product produto
- */
-public Product getProduct(){
-    return _product;
-}
-/** devolve a representacao interna em String do lote para a sua posterior apresentacao
- * @return String apresentacao
- */
-@Override
-public String toString(){
-    return ""+_product.getId()+"|"+_partner.getId()+"|"+Math.round(_price)+"|"+_quantity;
-}
 
-/** cria uma copia de um lote
- * @return Batch lote
- */
-Batch makeCopy(){
-    return new Batch(_price, _quantity, _partner, _product);
-}
+    void removeAmount(int amount){
+        _quantity -= amount;
+    }
 
-}
+    /** obter produto
+     * @return Product produto
+     */
+    Product getProduct(){
+        return _product;
+    }
+    /** devolve a representacao interna em String do lote para a sua posterior apresentacao
+     * @return String apresentacao
+     */
+    @Override
+    public String toString(){
+        return ""+_product.getId()+"|"+_partner.getId()+"|"+Math.round(_price)+"|"+_quantity;
+    }
+
+    /** cria uma copia de um lote
+     * @return Batch lote
+     */
+    Batch makeCopy(){
+        return new Batch(_price, _quantity, _partner, _product);
+    }
+
+    }

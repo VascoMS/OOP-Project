@@ -18,8 +18,9 @@ public class Partner implements Serializable, NotificationObserver{
     private double _totalPayedSalesValue;
     private double _totalAcquisitionValue;
     private List<Notification> _notifications;
+    private NotificationDeliveryMethod _deliveryMethod;
 
-    public Partner(String id, String name, String address){
+    Partner(String id, String name, String address){
         _name = name;
         _address = address;
         _id = id;
@@ -29,54 +30,65 @@ public class Partner implements Serializable, NotificationObserver{
         _batches = new ArrayList<>();
         _acquisitions = new ArrayList<>();
         _notifications = new ArrayList<>();
+        _deliveryMethod = DefaultDelivery.getInstance();
     }
 
-    public String getName(){
+    String getName(){
         return _name;
     }
 
-    public String getAddress(){
+    String getAddress(){
         return _address;
     }
 
-    public String getId(){
+    String getId(){
         return _id;
     }
 
-    public double getPoints(){
+    double getPoints(){
         return _points;
     }
 
-    public List<Batch> getBatches(){
+    List<Batch> getBatches(){
         return _batches;
     }
 
-    public List<Acquisition> getAcquisitions(){
+    List<Acquisition> getAcquisitions(){
         return _acquisitions;
     }
 
-    public List<Sale> getSales(){
+    List<Sale> getSales(){
         return _sales;
     }
 
-    public List<Notification> getNotifications(){
+    List<Notification> getNotifications(){
         return _notifications;
     }
 
-    public double getTotalSalesValue(){
+    double getTotalSalesValue(){
         return _totalSalesValue;
     }
 
-    public double getTotalPayedSalesValue(){
+    double getTotalPayedSalesValue(){
         return _totalPayedSalesValue;
     }
 
-    public double getTotalAcquisitionValue(){
+    double getTotalAcquisitionValue(){
         return _totalAcquisitionValue;
     }
 
-    public void updateNotifications(Notification notification){
+    void updateNotifications(Notification notification){
         _notifications.add(notification);
+    }
+
+    @Override
+    public void sendNotifications(Notification notification){
+        _deliveryMethod.send(this, notification);
+
+    }
+
+    public void removeNotification(Notification notification){
+        _notifications.remove(notification);
     }
 
     public double computeFine(Date currentDate, Date deadline, int period){

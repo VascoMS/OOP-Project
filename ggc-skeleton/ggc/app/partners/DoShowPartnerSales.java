@@ -3,7 +3,6 @@ package ggc.app.partners;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.app.exception.UnknownPartnerKeyException;
-import ggc.core.Partner;
 import ggc.core.Sale;
 import ggc.core.WarehouseManager;
 //FIXME import classes
@@ -21,8 +20,11 @@ class DoShowPartnerSales extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
+    String partnerId = stringField("partnerId");
     try{
-      _display.popup(_receiver.getPartnerSales(stringField("partnerId")));
+      for(Sale sale : _receiver.getPartnerSales(partnerId))
+        _display.addLine(sale.toString(_receiver.getDateWarehouse()));
+      _display.display();
     } catch(CoreUnknownPartnerKeyException e){
       throw new UnknownPartnerKeyException(stringField("partnerId"));
     }

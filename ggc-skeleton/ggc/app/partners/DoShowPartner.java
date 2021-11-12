@@ -19,19 +19,15 @@ class DoShowPartner extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-      String id = stringField("partnerId");
-      try {
-        _display.addLine(_receiver.getPartner(id));
-      } catch (CoreUnknownPartnerKeyException e) {
-        throw new UnknownPartnerKeyException(id);
-      }
-      try{
-      for(Notification n : _receiver.getPartner(id).getNotifications())
-        _display.addLine(n);
+    String id = stringField("partnerId");
+    try{
+      _display.addLine(_receiver.showPartner(id));
+      for(Notification notification : _receiver.showNotifications(id))
+        _display.addLine(notification.toString());
       _display.display();
-      } catch(CoreUnknownPartnerKeyException ex){
-        throw new UnknownPartnerKeyException(id);
-      }
+    } catch(CoreUnknownPartnerKeyException ex){
+      throw new UnknownPartnerKeyException(id);
+    }
   }
 
 }

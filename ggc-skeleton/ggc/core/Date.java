@@ -5,19 +5,19 @@ import java.util.Objects;
 public class Date implements Serializable{
     private int _days;
 
-    public Date(int days){
+    Date(int days){
         _days = days;
     }
     public int getDays(){
         return _days;
     }
 
-    public Date add(int days){
+    Date add(int days){
         _days += days;
         return this;
     }
 
-    public int difference(Date other){
+    int difference(Date other){
         return other.getDays()-_days;
     }
     @Override

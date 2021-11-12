@@ -35,7 +35,7 @@ public class DoRegisterBreakdownTransaction extends Command<WarehouseManager> {
     } catch(CoreUnknownProductKeyException pr){
       throw new UnknownProductKeyException(productId);
     } catch(CoreUnavailableProductException apr){
-      throw new UnavailableProductException(productId, amount, (int) apr.getAvailable());
+      throw new UnavailableProductException(apr.getId(), apr.getAmount(), apr.getAvailable());
     }
     
   }

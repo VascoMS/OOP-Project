@@ -6,16 +6,16 @@ public class Component implements Serializable{
     private Product _product;
     private int _quantity;
     
-    public Component(int quantity, Product product){
+    Component(int quantity, Product product){
         _product=product;
         _quantity=quantity;
     }
 
-    public Product getProduct(){
+    Product getProduct(){
         return _product;
     }
 
-    public int getQuantity(){
+    int getQuantity(){
         return _quantity;
     }
 

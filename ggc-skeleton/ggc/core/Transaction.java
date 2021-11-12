@@ -12,9 +12,8 @@ public abstract class Transaction implements Serializable{
     private Partner _partner;
     private Date _deadline;
 
-    public abstract boolean isPaid();
-
-    public Transaction(int id, double baseValue, int quantity, Product product, Partner partner, int deadline){
+    
+    Transaction(int id, double baseValue, int quantity, Product product, Partner partner, int deadline){
         _id = id;
         _baseValue = baseValue;
         _quantity = quantity;
@@ -22,47 +21,51 @@ public abstract class Transaction implements Serializable{
         _partner = partner;
         _deadline = new Date(deadline);
     }
-    public int getId(){
+
+    int getId(){
         return _id;
     }
-
-    public double getBaseValue(){
+    
+    double getBaseValue(){
         return _baseValue;
     }
-
-    public double getAmountPaid(){
+    
+    double getAmountPaid(){
         return _amountPaid;
     }
-
-    public Date getDeadline(){
+    
+    Date getDeadline(){
         return _deadline;
     }
-
-    public void setAmountPaid(double amount){
+    
+    void setAmountPaid(double amount){
         _amountPaid = amount;
     }
-
-    public int getQuantity(){
+    
+    int getQuantity(){
         return _quantity;
     }
-
-    public Product getProduct(){
+    
+    Product getProduct(){
         return _product;
     }
-
-    public Partner getPartner(){
+    
+    Partner getPartner(){
         return _partner;
     }
-
-    public Date getPaymentDate(){
+    
+    Date getPaymentDate(){
         return _paymentDate;
     }
-
-    public void setPaymentDate(Date date){
-        _paymentDate=date;
+    
+    void setPaymentDate(int date){
+        
+        _paymentDate=new Date(date);
     }
+    
+    abstract boolean isPaid();
 
-    public abstract double calculatePayment(Date currentDate);
-
+    abstract double calculatePayment(Date currentDate);
+    
     public abstract String toString(Date date);
 }
