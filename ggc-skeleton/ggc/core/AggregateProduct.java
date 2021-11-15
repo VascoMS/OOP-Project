@@ -29,12 +29,11 @@ public class AggregateProduct extends Product{
 
     void aggregateProduct(int amount, int available, Partner partner, Warehouse warehouse) throws CoreUnavailableProductException{
         int necessary = amount-available;
-        double price=0;
         List<Batch> batches = new ArrayList<>();
         for(Component component : _recipe.getComponents()){
             if(!component.getProduct().checkQuantity(component.getQuantity()*necessary))
                 component.getProduct().aggregateProduct(component.getQuantity()*necessary, component.getProduct().getTotalStock(), partner, warehouse);
-            price = component.getProduct().calculatePrice(component.getQuantity()*necessary, warehouse);
+            double price = component.getProduct().calculatePrice(component.getQuantity()*necessary, warehouse);
             
             batches.add(new Batch(price, component.getQuantity(), partner, component.getProduct()));
         }

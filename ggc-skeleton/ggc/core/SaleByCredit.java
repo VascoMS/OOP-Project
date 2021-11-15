@@ -15,8 +15,7 @@ public class SaleByCredit extends Sale {
     double calculatePayment(Date currentDate) {
         double discount = super.getPartner().computeDiscount(currentDate, getDeadline(), super.getProduct().getPeriodN());
         double fine = super.getPartner().computeFine(currentDate, getDeadline(), super.getProduct().getPeriodN());
-        double payment = super.getBaseValue() - (super.getBaseValue() * discount) + (super.getBaseValue() * fine);
-        return payment;
+        return super.getBaseValue() - (super.getBaseValue() * discount) + (super.getBaseValue() * fine);
     }
 
     void paySale(double payment, Date date) {

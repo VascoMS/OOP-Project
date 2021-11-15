@@ -185,7 +185,7 @@ public class WarehouseManager {
    * @@throws MissingFileAssociationException
    */
   public void save() throws MissingFileAssociationException{
-    if(_filename.equals(""))
+    if("".equals(_filename))
       throw new MissingFileAssociationException();
     try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(_filename))){
     out.writeObject(_warehouse);

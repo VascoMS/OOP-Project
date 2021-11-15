@@ -19,7 +19,7 @@ public class BreakdownSale extends Sale{
         Recipe recipe = ((AggregateProduct)super.getProduct()).getRecipe();
         String componentsString="";
         for(Component component : recipe.getComponents()){
-            if(componentsString!="")
+            if(!("".equals(componentsString)))
                 componentsString += "#";
             componentsString += component.getProduct().getId()+":"
             +Math.round(component.getQuantity()*super.getQuantity())+":"

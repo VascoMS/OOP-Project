@@ -109,9 +109,8 @@ public abstract class Product implements Serializable{
     }
 
     void addBatch(Batch batch, boolean notifiable) {
-        Notification notification;
         if(notifiable){
-            notification = checkNotification(batch);
+            Notification notification = checkNotification(batch);
             if(notification!=null)
                 notifyObservers(notification);
         } 
@@ -211,10 +210,9 @@ public abstract class Product implements Serializable{
     double calculatePrice(int amount, Warehouse warehouse){
             double baseValue=0;
             int quantity = amount;
-            Batch batch;
             Iterator<Batch> iter = getBatchesSortedByPrice().iterator();
             while(amount != 0 && iter.hasNext()){
-              batch = iter.next();
+              Batch batch = iter.next();
               if(batch.getQuantity() <= amount){
                 baseValue += batch.getQuantity()*batch.getPrice();
                 amount -= batch.getQuantity();

@@ -120,11 +120,10 @@ public class Warehouse implements Serializable {
 
   List<Notification> showNotifications(String partnerId) throws CoreUnknownPartnerKeyException{
     Partner partner = getPartner(partnerId);
-    Notification notification;
     List<Notification> notifications = new ArrayList<>(partner.getNotifications());
     Iterator<Notification> iter = partner.getNotifications().iterator();
     while(iter.hasNext()){
-      notification=iter.next();
+      Notification notification = iter.next();
       iter.remove();
     }
     return notifications;

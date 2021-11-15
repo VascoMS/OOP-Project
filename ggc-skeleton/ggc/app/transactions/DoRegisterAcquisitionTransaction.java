@@ -33,11 +33,11 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
     List<Integer> quantities = new ArrayList<>();
     String partnerId = stringField("partnerId");
     String productId = stringField("productId");
-    int numberComponents;
+    
     if(!_receiver.hasProduct(productId)){
       String hasRecipe = Form.requestString(Message.requestAddRecipe());
-      if(hasRecipe.equals("s") || hasRecipe.equals("S")){
-        numberComponents = Form.requestInteger(Message.requestNumberOfComponents());
+      if("s".equals(hasRecipe) || "S".equals(hasRecipe)){
+        int numberComponents = Form.requestInteger(Message.requestNumberOfComponents());
         double alpha = Form.requestReal(Message.requestAlpha());
         int i = 0;
         while(i++ < numberComponents){
